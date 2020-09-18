@@ -30,7 +30,6 @@ AY20/21 Sem1 CS2102 Database Systems Group Project (Team 41)
 
 1. Successful bidders are defined as the highest bidder by price, if there are multiple bidders for the same caretaker for the same day.
 
-
 1. Every User can be identified by their user_id
 
 1. Every Pet can be identified by their pet_id
@@ -51,6 +50,9 @@ AY20/21 Sem1 CS2102 Database Systems Group Project (Team 41)
 
 1. Existence and identity of Leave(weak entity) depends on the existence of Care_Takers(owning entity)
 
+1. Full-time Care_Takers can take care of up to 5 pets at a time
+
+1. Care_Takers cannot bid or rate themselves
 
 ### 3. Non-trivial constraints with triggers
 
