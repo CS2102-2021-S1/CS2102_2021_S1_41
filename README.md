@@ -26,7 +26,58 @@ AY20/21 Sem1 CS2102 Database Systems Group Project (Team 41)
 
 1. Automatic contract selection based on the same/similar area and availability of caretaker.
 
+1. Underperforming full-time caretakers is defined as a full-time caretaker that works less than the average number of pet-days per month of all full-time caretakers, or one that works less than 60 pet-days per month. ie min(average, 60).
+
+1. Successful bidders are defined as the highest bidder by price, if there are multiple bidders for the same caretaker for the same day.
+
+
 
 ### 3. Non-trivial constraints with triggers
 
+1. Average rating for Caretakers
+
+1. When bid by any Pet Owner, a full-time Caretaker will always accept the job immediately if possible
+
+1. If Caretaker applies for leave, their availability will automatically be set to not available for the range of the dates of the leave.
+
 ### 4. Justification of any serial type
+
+1. UserID
+    * UserID can be tracked easily with natural increments, as well as to identify which role the user is taking. Hence, one user may take multiple roles, for example, PCS_Admin may also be a Pet_Owner.
+
+1. AgreementID
+    * Agreements increments naturally as bids come
+
+1. PaymentID
+    * PaymentID and AgreementID are total participating entities with key constraint, hence PaymentID follows AgreementId to have a serial type
+
+### 5. Data Types
+
+| Table        | Attribute       | Data Type |
+|--------------|-----------------|-----------|
+| Users        | user_id         | SERIAL    |
+|              | name            | VARCHAR   |
+|              | password        | VARCHAR   |
+| Rates        | transaction     | VARCHAR   |
+|              | rating          | INTEGER   |
+|              | review          | TEXT      |
+| Pet_Owners   | area            | INTEGER   |
+| Care_Takers  | rating_score    | INTEGER   |
+|              | employment_type | VARCHAR   |
+|              | area            | INTEGER   |
+| Pets         | pet_id          | VARCHAR   |
+|              | pet_name        | VARCHAR   |
+|              | special_req     | TEXT      |
+|              | pet_type        | VARCHAR   |
+| Agreements   | agreement_id    | SERIAL    |
+|              | transfer_mode   | VARCHAR   |
+|              | dates           | DATE      |
+| Payments     | payment_id      | SERIAL    |
+|              | payment_amt     | FLOAT     |
+|              | payment_mode    | VARCHAR   |
+| Price_List   | price           | FLOAT     |
+|              | pet_type        | VARCHAR   |
+| Availability | start_date      | DATE      |
+|              | end_date        | DATE      |
+| Leave        | start_date      | DATE      |
+|              | end_date        | DATE      |
