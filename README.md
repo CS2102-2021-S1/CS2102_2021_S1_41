@@ -45,3 +45,33 @@ AY20/21 Sem1 CS2102 Database Systems Group Project (Team 41)
 1. PaymentID
 * PaymentID and AgreementID are total participating entities with key constraint, hence PaymentID follows AgreementId to have a serial type
 
+### 5. Data Types
+
+| Table        | Attribute       | Data Type |
+|--------------|-----------------|-----------|
+| Users        | user_id         | SERIAL    |
+|              | name            | VARCHAR   |
+|              | password        | VARCHAR   |
+| Rates        | transaction     | VARCHAR   |
+|              | rating          | INTEGER   |
+|              | review          | TEXT      |
+| Pet_Owners   | area            | INTEGER   |
+| Care_Takers  | rating_score    | INTEGER   |
+|              | employment_type | VARCHAR   |
+|              | area            | INTEGER   |
+| Pets         | pet_id          | VARCHAR   |
+|              | pet_name        | VARCHAR   |
+|              | special_req     | TEXT      |
+|              | pet_type        | VARCHAR   |
+| Agreements   | agreement_id    | SERIAL    |
+|              | transfer_mode   | VARCHAR   |
+|              | dates           | DATE      |
+| Payments     | payment_id      | SERIAL    |
+|              | payment_amt     | FLOAT     |
+|              | payment_mode    | VARCHAR   |
+| Price_List   | price           | FLOAT     |
+|              | pet_type        | VARCHAR   |
+| Availability | start_date      | DATE      |
+|              | end_date        | DATE      |
+| Leave        | start_date      | DATE      |
+|              | end_date        | DATE      |
