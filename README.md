@@ -1,7 +1,7 @@
 # CS2102_2021_S1_41
 AY20/21 Sem1 CS2102 Database Systems Group Project (Team 41)
 * Ko Gi Hun (@nordic96)
-* @AugGust
+* Lim Jia Ying (@AugGust)
 * Chan Wei Qiang Jason (@jasonchanwq)
 * Putra Mohammad Danish Bin Mohd Rafee (@iamputradanish)
 * Chew Zhao En (@chewzhaoen) 
