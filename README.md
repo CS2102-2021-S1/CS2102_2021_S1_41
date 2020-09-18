@@ -100,7 +100,7 @@ AY20/21 Sem1 CS2102 Database Systems Group Project (Team 41)
 |              | payment_mode    | VARCHAR   | NOT NULL |
 | Price_List   | price           | FLOAT     | NOT NULL |
 |              | pet_type        | VARCHAR   | NOT NULL |
-| Availability | start_date      | DATE      | NULLABLE |
-|              | end_date        | DATE      | NULLABLE |
-| Leave        | start_date      | DATE      | NULLABLE |
-|              | end_date        | DATE      | NULLABLE |
+| Availability | start_date      | DATE      | NOT NULL |
+|              | end_date        | DATE      | NOT NULL |
+| Leave        | start_date      | DATE      | NOT NULL |
+|              | end_date        | DATE      | NOT NULL |
