@@ -83,10 +83,9 @@ AY20/21 Sem1 CS2102 Database Systems Group Project (Team 41)
 | Table        | Attribute       | Data Type | Nullity  |
 |--------------|-----------------|-----------|----------|
 | Users        | user_id         | SERIAL    | NOT NULL |
-|              | name            | VARCHAR   | NULLABLE |
+|              | name            | VARCHAR   | NOT NULL |
 |              | password        | VARCHAR   | NOT NULL |
-| Rates        | transaction     | VARCHAR   | NULLABLE |
-|              | rating          | INTEGER   | NULLABLE |
+| Rates        | rating          | INTEGER   | NOT NULL |
 |              | review          | TEXT      | NULLABLE |
 | Pet_Owners   | area            | INTEGER   | NOT NULL |
 | Care_Takers  | rating_score    | INTEGER   | NULLABLE |
