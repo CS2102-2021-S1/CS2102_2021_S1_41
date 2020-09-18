@@ -44,7 +44,7 @@ AY20/21 Sem1 CS2102 Database Systems Group Project (Team 41)
 
 1. Existence of Payments(weak entity) depends on the existence of Agreements(owning entity)
 
-1. Existence of Rates(weak entity) depends on the existence of Agreements(owning entity)
+1. Existence and identity of Rates(weak entity) depends on the existence of Agreements(owning entity)
 
 1. Existence and identity of Price_List(weak entity) depends on the existence of Care_Takers(owning entity)
 
@@ -83,9 +83,10 @@ AY20/21 Sem1 CS2102 Database Systems Group Project (Team 41)
 | Table        | Attribute       | Data Type | Nullity  |
 |--------------|-----------------|-----------|----------|
 | Users        | user_id         | SERIAL    | NOT NULL |
-|              | name            | VARCHAR   | NOT NULL |
+|              | name            | VARCHAR   | NULLABLE |
 |              | password        | VARCHAR   | NOT NULL |
-| Rates        | rating          | INTEGER   | NOT NULL |
+| Rates        | transaction     | VARCHAR   | NULLABLE |
+|              | rating          | INTEGER   | NULLABLE |
 |              | review          | TEXT      | NULLABLE |
 | Pet_Owners   | area            | INTEGER   | NOT NULL |
 | Care_Takers  | rating_score    | INTEGER   | NULLABLE |
