@@ -26,7 +26,22 @@ AY20/21 Sem1 CS2102 Database Systems Group Project (Team 41)
 
 1. Automatic contract selection based on the same/similar area and availability of caretaker.
 
+1. Underperforming full-time caretakers is defined as a full-time caretaker that works less than the average number of pet-days per month of all full-time caretakers, or one that works less than 60 pet-days per month. ie min(average, 60).
+
+1. Successful bidders are defined as the highest bidder by price, if there are multiple bidders for the same caretaker for the same day.
+
+
 
 ### 3. Non-trivial constraints with triggers
 
 ### 4. Justification of any serial type
+
+1. UserID
+* UserID can be tracked easily with natural increments, as well as to identify which role the user is taking. Hence, one user may take multiple roles, for example, PCS_Admin may also be a Pet_Owner.
+
+1. AgreementID
+* Agreements increments naturally as bids come
+
+1. PaymentID
+* PaymentID and AgreementID are total participating entities with key constraint, hence PaymentID follows AgreementId to have a serial type
+
