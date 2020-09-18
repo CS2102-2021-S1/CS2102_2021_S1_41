@@ -56,31 +56,31 @@ AY20/21 Sem1 CS2102 Database Systems Group Project (Team 41)
 
 ### 5. Data Types
 
-| Table        | Attribute       | Data Type |
-|--------------|-----------------|-----------|
-| Users        | user_id         | SERIAL    |
-|              | name            | VARCHAR   |
-|              | password        | VARCHAR   |
-| Rates        | transaction     | VARCHAR   |
-|              | rating          | INTEGER   |
-|              | review          | TEXT      |
-| Pet_Owners   | area            | INTEGER   |
-| Care_Takers  | rating_score    | INTEGER   |
-|              | employment_type | VARCHAR   |
-|              | area            | INTEGER   |
-| Pets         | pet_id          | SERIAL    |
-|              | pet_name        | VARCHAR   |
-|              | special_req     | TEXT      |
-|              | pet_type        | VARCHAR   |
-| Agreements   | agreement_id    | SERIAL    |
-|              | transfer_mode   | VARCHAR   |
-|              | dates           | DATE      |
-| Payments     | payment_id      | SERIAL    |
-|              | payment_amt     | FLOAT     |
-|              | payment_mode    | VARCHAR   |
-| Price_List   | price           | FLOAT     |
-|              | pet_type        | VARCHAR   |
-| Availability | start_date      | DATE      |
-|              | end_date        | DATE      |
-| Leave        | start_date      | DATE      |
-|              | end_date        | DATE      |
+| Table        | Attribute       | Data Type | Nullity  |
+|--------------|-----------------|-----------|----------|
+| Users        | user_id         | SERIAL    | NOT NULL |
+|              | name            | VARCHAR   | NULLABLE |
+|              | password        | VARCHAR   | NOT NULL |
+| Rates        | transaction     | VARCHAR   | NULLABLE |
+|              | rating          | INTEGER   | NULLABLE |
+|              | review          | TEXT      | NULLABLE |
+| Pet_Owners   | area            | INTEGER   | NOT NULL |
+| Care_Takers  | rating_score    | INTEGER   | NULLABLE |
+|              | employment_type | VARCHAR   | NOT NULL |
+|              | area            | INTEGER   | NOT NULL |
+| Pets         | pet_id          | SERIAL    | NOT NULL |
+|              | pet_name        | VARCHAR   | NULLABLE |
+|              | special_req     | TEXT      | NULLABLE |
+|              | pet_type        | VARCHAR   | NOT NULL |
+| Agreements   | agreement_id    | SERIAL    | NOT NULL |
+|              | transfer_mode   | VARCHAR   | NOT NULL |
+|              | dates           | DATE      | NOT NULL |
+| Payments     | payment_id      | SERIAL    | NOT NULL |
+|              | payment_amt     | FLOAT     | NOT NULL |
+|              | payment_mode    | VARCHAR   | NOT NULL |
+| Price_List   | price           | FLOAT     | NOT NULL |
+|              | pet_type        | VARCHAR   | NOT NULL |
+| Availability | start_date      | DATE      | NULLABLE |
+|              | end_date        | DATE      | NULLABLE |
+| Leave        | start_date      | DATE      | NULLABLE |
+|              | end_date        | DATE      | NULLABLE |
