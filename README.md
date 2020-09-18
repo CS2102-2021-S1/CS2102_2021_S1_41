@@ -34,16 +34,22 @@ AY20/21 Sem1 CS2102 Database Systems Group Project (Team 41)
 
 ### 3. Non-trivial constraints with triggers
 
+1. Average rating for Caretakers
+
+1. When bid by any Pet Owner, a full-time Caretaker will always accept the job immediately if possible
+
+1. If Caretaker applies for leave, their availability will automatically be set to not available for the range of the dates of the leave.
+
 ### 4. Justification of any serial type
 
 1. UserID
-* UserID can be tracked easily with natural increments, as well as to identify which role the user is taking. Hence, one user may take multiple roles, for example, PCS_Admin may also be a Pet_Owner.
+    * UserID can be tracked easily with natural increments, as well as to identify which role the user is taking. Hence, one user may take multiple roles, for example, PCS_Admin may also be a Pet_Owner.
 
 1. AgreementID
-* Agreements increments naturally as bids come
+    * Agreements increments naturally as bids come
 
 1. PaymentID
-* PaymentID and AgreementID are total participating entities with key constraint, hence PaymentID follows AgreementId to have a serial type
+    * PaymentID and AgreementID are total participating entities with key constraint, hence PaymentID follows AgreementId to have a serial type
 
 ### 5. Data Types
 
