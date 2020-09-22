@@ -1,3 +1,5 @@
+[![Heroku App Status](http://heroku-shields.herokuapp.com/cs2102-2021-s1-41)](https://cs2102-2021-s1-41.herokuapp.com)
+
 # CS2102_2021_S1_41
 AY20/21 Sem1 CS2102 Database Systems Group Project (Team 41)
 * Ko Gi Hun (@nordic96)
