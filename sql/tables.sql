@@ -36,15 +36,9 @@ CREATE TABLE Owns (
     PRIMARY KEY (pet_id)
 );
 
-CREATE TABLE Agreements (
-    agreement_id SERIAL PRIMARY KEY,
+CREATE TABLE Bids (
+    bid_id SERIAL PRIMARY KEY,
     transfer_mode VARCHAR(3) NOT NULL,
     dates DATE NOT NULL
-)
-
-CREATE TABLE Payments (
-    agreement_id INTEGER REFERENCES Agreements(agreement_id) ON DELETE CASCADE
-    payment_id SERIAL PRIMARY KEY,
-    payment_amt NUMERIC(2) NOT NULL,
-    payment_mode VARCHAR(3) NOT NULL
+    agreement BIT /* replacement for boolean */
 )
