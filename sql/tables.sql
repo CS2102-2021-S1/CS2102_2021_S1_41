@@ -39,6 +39,6 @@ CREATE TABLE Owns (
 CREATE TABLE Bids (
     bid_id SERIAL PRIMARY KEY,
     transfer_mode VARCHAR(3) NOT NULL,
-    dates DATE NOT NULL
+    dates DATE NOT NULL,
     agreement BIT /* replacement for boolean */
 )
