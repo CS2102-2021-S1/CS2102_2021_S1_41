@@ -58,7 +58,7 @@ CREATE TABLE Bids (
 	pet_name		VARCHAR (50) NOT NULL, /*Composite Foreign Key*/
 	transfer_mode	VARCHAR (50) NOT NULL, /*Will change this to 1,2,3 and integer if this is settled in front end, else check if it fits all availble transfer method in varchar*/
 	start_date		DATE NOT NULL, /*Overlapping dates in availability can be checked by triggers or in the insertion function itself. Simply (start1, end1) OVERLAPS (start2, end2)*/
-	end_date		DATE NOT NULL CHECK (end_date > start_date), 
+	end_date		DATE NOT NULL CHECK (end_date >= start_date), 
 	daily_price		NUMERIC (4,2) NOT NULL CHECK (daily_price > 0),/*Will add check caretaker price, triggers needed to update caretaker price with rating*/
 	
 	selected		BOOLEAN, /*Simply a nullable attribute*/
@@ -84,7 +84,7 @@ CREATE TABLE Prices (
 CREATE TABLE Availabilities (
 	care_taker		VARCHAR (50) NOT NULL REFERENCES Care_Takers(login_name),
 	start_date		DATE NOT NULL,
-	end_date		DATE NOT NULL CHECK (end_date > start_date)
+	end_date		DATE NOT NULL CHECK (end_date >= start_date)
 	/*Overlapping dates can be checked by triggers or in the insertion function itself. Simply (start1, end1) OVERLAPS (start2, end2)*/
 	/*PRIMARY KEY not even needed as check between dates, dates unique have no impact*/
 	/*PRIMARY KEY (care_taker,start_date) end date pointless*/
@@ -95,7 +95,7 @@ CREATE TABLE Availabilities (
 CREATE TABLE Leaves (
 	care_taker		VARCHAR (50) NOT NULL REFERENCES Care_Takers(login_name),
 	start_date		DATE NOT NULL,
-	end_date		DATE NOT NULL CHECK (end_date > start_date)
+	end_date		DATE NOT NULL CHECK (end_date >= start_date)
 	/*Overlapping dates can be checked by triggers or in the insertion function itself. Simply (start1, end1) OVERLAPS (start2, end2)*/
 	/*PRIMARY KEY not even needed as check between dates, dates unique have no impact*/
 	/*PRIMARY KEY (care_taker,start_date) end date pointless*/
