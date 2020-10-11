@@ -3,16 +3,18 @@ const bodyParser = require('body-parser');
 const path = require('path');
 
 var users = require('./routes/users');
-//var routes = require('./routes');
+var indexRouter = require('./routes/index');
 var app = express();
 
-app.set('port', process.env.PORT || 5005);
+app.set('port', process.env.PORT || 3000);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended:true}));
 app.use(express.static(path.join(__dirname, '../public')));
+
+app.use('/', indexRouter);
 
 //app.get('/', routes.index);
 app.get('/users', users.list);
