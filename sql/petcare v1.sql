@@ -81,7 +81,7 @@ CREATE TABLE Prices (
 	PRIMARY KEY (care_taker,pet_type)
 );
 
-CREATE TABLE Availablilities (
+CREATE TABLE Availabilities (
 	care_taker		VARCHAR (50) NOT NULL REFERENCES Care_Takers(login_name),
 	start_date		DATE NOT NULL,
 	end_date		DATE NOT NULL CHECK (end_date > start_date)
