@@ -11,3 +11,4 @@ yarn-error.log*
 *.db
 *.zip
 *.rar
+.idea/
