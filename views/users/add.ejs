@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<body>
+<head>
+    <title>Pet Care System (PCS) SG - <%=title%></title>
+</head>
+<div class="page-header"><h2><%=title%></h2></div>
+<div class="page-data">
+    <form action="/users/add" method="post">
+        <label for="uname">Full Name</label>
+        <input type="text" id="uname" placeholder="User Name" required="required", name="uname">
+        <label for="login_name">Login ID</label>
+        <input type="text" id="login_name" placeholder="Login Name" required="required", name="login_name">
+        <label for="password_hash">Password</label>
+        <input type="text" id="password_hash" placeholder="Password" required="required", name="password_hash">
+
+        <input type="submit" value="Register User">
+    </form>
+</div>
+</body>
+</html>
