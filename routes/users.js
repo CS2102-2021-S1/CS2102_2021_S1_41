@@ -44,8 +44,10 @@ exports.save = (req, res) => {
         (err, result) => {
             if (err) {
                 console.log("Error, user not saved! : %s", err);
+                res.render("users/add", {title: "Register User", user: "undefined", success: false, error: err});
+            } else {
+                res.redirect("/users");
             }
-            res.redirect("/");
         }
     );
 };

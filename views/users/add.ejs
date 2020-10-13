@@ -4,8 +4,12 @@
 <head>
     <title>Pet Care System (PCS) SG - <%=title%></title>
 </head>
-<div class="page-header"><h2><%=title%></h2></div>
-<div class="page-data">
+<div class="page-header">
+    <h2><%=title%></h2>
+    <a href="/" class="menu_links">Home Page</a><br>
+    <hr>
+</div>
+<div class="page-data" style="padding:5pt">
     <form action="/users/add" method="post">
         <label for="uname">Full Name</label>
         <input type="text" id="uname" placeholder="User Name" required="required", name="uname">
@@ -16,6 +20,12 @@
 
         <input type="submit" value="Register User">
     </form>
+</div>
+<div style="background-color:lightgray">
+    <%if(typeof error == "undefined"){%>
+    <% } else { %>
+        Error Message: <%= error.message%>
+    <%}%>
 </div>
 </body>
 </html>
