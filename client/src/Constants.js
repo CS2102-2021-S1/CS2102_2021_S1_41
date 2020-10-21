@@ -1,2 +1,2 @@
 // Define constants here
-export const CONST_EXAMPLE = "SOME CONST";
+export const BACKEND_PORT = 8080;
