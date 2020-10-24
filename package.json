@@ -15,7 +15,8 @@
 		"pg": "8.3.3",
 		"express": "^4.17.1",
 		"http": "0.0.1-security",
-		"yargs": "^16.1.0"
+		"yargs": "^16.1.0",
+		"nodemon": "2.0.6"
 	},
 	"devDependencies": {
 		"concurrently": "^3.5.0"
