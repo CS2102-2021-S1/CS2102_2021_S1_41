@@ -28,7 +28,7 @@ const port = argv.port || 8080;
 
 app.post("/register", (req, res) =>	{
 	const salt = crypto.randomBytes(12).toString('base64');
-	const hash = crypto.createHash('sha256').update(req.body.password).digest('base64');
+	const hash = crypto.createHash('sha256').update(salt + req.body.password).digest('base64');
 	db.query('INSERT INTO users(username, display_name, password_hash, salt) VALUES ($1, $2, $3, $4)', 
 	[req.body.username, req.body.display_name, hash, salt], (error, results) =>	{
 		if (!error)
