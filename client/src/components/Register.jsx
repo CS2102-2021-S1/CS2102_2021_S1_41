@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import "css/styles.css";
 import icon from "img/icon.png";
-import { BACKEND_PORT } from "../Constants.js";
 
 class Register extends Component {
 	constructor(props) {
@@ -48,7 +47,7 @@ class Register extends Component {
 		} else {
 			this.setState({ error: "" });
 		}
-		fetch(window.location.protocol + "//" + window.location.host + ":" + BACKEND_PORT + "/register", {
+		fetch(window.location.protocol + "//" + window.location.host + "/register", {
 			method: "POST",
 			mode: "cors",
 			headers: { "Content-Type": "application/json" },

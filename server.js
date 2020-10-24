@@ -4,7 +4,6 @@ const express  = require('express');
 const bodyParser = require('body-parser');
 const yargs = require('yargs');
 const { Client } = require('pg');
-const cors = require('cors');
 const crypto = require('crypto');
 
 const db = new Client({
@@ -22,7 +21,6 @@ console.log("Connected to the database.");
 
 const argv = yargs(process.argv).argv;
 const app = express();
-app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 const server = http.createServer(app);
