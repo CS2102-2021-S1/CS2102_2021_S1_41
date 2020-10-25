@@ -34,14 +34,26 @@ app.post("/register", (req, res) =>	{
 	const hash = crypto.createHash('sha256').update(salt + req.body.password).digest('base64');
 	db.query('INSERT INTO users(username, display_name, password_hash, salt) VALUES ($1, $2, $3, $4)', 
 	[req.body.username, req.body.display_name, hash, salt], (error, results) =>	{
-		if (!error)
-			res.send({status: 'registered'});
+		if (!error)	{
+			db.query('INSERT INTO pet_owners(username) VALUES ($1)', 
+				[req.body.username], (error, results) =>	{
+					if (!error)
+						res.send({status: 'registered'});
+					else
+						res.send({status: 'failed'});
+				});
+		}
 		else
 			res.send({status: 'failed'});
 	});
 });
 
 app.post("/login", jwtLogin);
+
+//Use isAuthenticationMiddleware to check if user is logged in (Server side check)
+app.get("/getPets", isAuthenticatedMiddleware, (req, res) =>	{
+	let user = req.user;
+});
 
 server.listen(port, () =>
 	console.log(`Backend server started on port ${port}`)

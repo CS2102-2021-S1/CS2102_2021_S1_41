@@ -28,12 +28,30 @@ const auth = (db) =>	{
 			const decoded = decodeToken(token);
 			const { username } = decoded;
 			
-			//Search for the username
-			//Set the authenticated username in the req header
-			db.query('SELECT * FROM usernames WHERE username = $1', [username], (error, results) =>	{
+			let user = { username: "", isPetOwner: false, isCareTaker: false, isAdmin: false }
+			db.query('SELECT * FROM pet_owners WHERE username = $1', [username], (error, results) =>	{
+				if (!error)	{
+					if (results.rows.length == 1)
+						user.isPetOwner = true;
+				}
+			});
+			db.query('SELECT * FROM care_takers WHERE username = $1', [username], (error, results) =>	{
+				if (!error)	{
+					if (results.rows.length == 1)
+						user.isCareTaker = true;
+				}
+			});
+			db.query('SELECT * FROM pcs_administrators WHERE username = $1', [username], (error, results) =>	{
+				if (!error)	{
+					if (results.rows.length == 1)
+						user.isAdmin = true;
+				}
+			});
+			db.query('SELECT * FROM users WHERE username = $1', [username], (error, results) =>	{
 				if (!error)	{
 					if (results.rows.length == 1)	{
-						req.username = username;
+						user.username = username;
+						req.user = user;
 					}
 				}
 			});
@@ -59,14 +77,42 @@ const auth = (db) =>	{
 	async function jwtLogin(req, res) {
 		const { username, password } = req.body;
 
-		db.query('SELECT * FROM users WHERE username = $1', [username], (error, results) =>	{
+		db.query('SELECT * FROM users WHERE username = $1', [username], async (error, results) =>	{
 			if (!error)	{
 				if (results.rows.length == 1)	{
 					const salt = results.rows[0].salt;
 					const hash = crypto.createHash('sha256').update(salt + password).digest('base64');
 					if (hash === results.rows[0].password_hash)	{
 						const accessToken = encodeToken({ username: username });
-						return res.json({ status: "Success", displayName: results.rows[0].display_name, accessToken });
+						let isPetOwner = false;
+						let isCareTaker = false;
+						let isAdmin = false;
+
+						try	{
+							const res = await db.query('SELECT * FROM pet_owners WHERE username = $1', [username]);
+							if (res.rows.length == 1)
+								isPetOwner = true;
+						} catch (err) {
+							console.log(err);
+						}
+
+						try	{
+							const res = await db.query('SELECT * FROM care_takers WHERE username = $1', [username]);
+							if (res.rows.length == 1)
+								isCareTaker = true;
+						} catch (err) {
+							console.log(err);
+						}
+
+						try	{
+							const res = await db.query('SELECT * FROM pcs_administrators WHERE username = $1', [username]);
+							if (res.rows.length == 1)
+								isAdmin = true;
+						} catch (err) {
+							console.log(err);
+						}
+
+						return res.json({ status: "Success", displayName: results.rows[0].display_name, accessToken, isPetOwner, isCareTaker, isAdmin });
 					}
 					else	{
 						return res.json({ status: 'Invalid login' });

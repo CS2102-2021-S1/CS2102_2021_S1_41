@@ -5,11 +5,14 @@ export function isLoggedIn()   {
         return false;
 }
 
-export function saveLoginCredentials(username, displayName, accessToken)    {
+export function saveLoginCredentials(username, displayName, accessToken, isPetOwner, isCareTaker, isAdmin)    {
     localStorage.setItem("loggedIn", "1");
     localStorage.setItem("username", username);
     localStorage.setItem("displayName", displayName);
     localStorage.setItem("accessToken", accessToken);
+    localStorage.setItem("isPetOwner", isPetOwner);
+    localStorage.setItem("isCareTaker", isCareTaker);
+    localStorage.setItem("isAdmin", isAdmin);
 }
 
 export function getDisplayName()    {
@@ -17,7 +20,17 @@ export function getDisplayName()    {
 }
 
 export function getAccessToken()    {
-    localStorage.getItem("accessToken");
+    return localStorage.getItem("accessToken");
+}
+
+export function isPetOwner()    {
+    return localStorage.getItem("isPetOwner") === "true";
+}
+export function isCareTaker()    {
+    return localStorage.getItem("isCareTaker") === "true";
+}
+export function isAdmin()    {
+    return localStorage.getItem("isAdmin") === "true";
 }
 
 export function logOut()    {
