@@ -53,6 +53,8 @@ app.post("/login", jwtLogin);
 //Use isAuthenticationMiddleware to check if user is logged in (Server side check)
 app.get("/getPets", isAuthenticatedMiddleware, (req, res) =>	{
 	console.log(req.user);
+	console.log(req.user.is);
+	res.send({status: 'Wow this is pet!'});
 });
 
 server.listen(port, () =>

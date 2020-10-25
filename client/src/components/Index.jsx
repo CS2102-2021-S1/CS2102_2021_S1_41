@@ -42,7 +42,7 @@ class Index extends Component {
 						<div className="col-12">
 							<div className="row wrapper flex-column flex-sm-row nav-size">
 								<main className="col-12 bg-faded py-3 rounded">
-									<button onClick={this.getPets}>Hello</button>
+									<button onClick={this.getPets}>Test Button</button>
 								</main>
 							</div>
 						</div>
