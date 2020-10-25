@@ -17,12 +17,13 @@ const db = new Client({
 db.connect();
 console.log("Connected to the database.");
 
-
+var careTakerRouter = require('./routes/caretakers');
 
 const argv = yargs(process.argv).argv;
 const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+app.use('/caretakers', careTakerRouter);
 const server = http.createServer(app);
 const port = argv.port || 8080;
 
