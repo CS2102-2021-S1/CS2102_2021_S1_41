@@ -428,3 +428,7 @@ main {
 .icon {
 	margin-right: 10px;
 }
+
+.nav-link:hover {
+	cursor: pointer;
+}

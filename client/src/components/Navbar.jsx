@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import "css/styles.css";
 import icon from "img/icon.png";
+import { isLoggedIn, getDisplayName, logOut } from "./ClientAuth";
 
 class Navbar extends Component {
 	constructor(props) {
@@ -8,6 +9,42 @@ class Navbar extends Component {
 		this.state = {
 			example_state: "-",
 		};
+	}
+	renderLogin() {
+		return (
+			<ul className="navbar-nav ml-auto">
+				<li className="nav-item">
+					<a className="nav-link" href="/login">
+						Log In
+					</a>
+				</li>
+				<li className="nav-item">
+					<a className="nav-link" href="/register">
+						Register
+					</a>
+				</li>
+			</ul>
+		);
+	}
+	renderUser() {
+		return (
+			<ul className="navbar-nav ml-auto">
+				<li className="nav-item">
+					<a className="nav-link" href="">
+						<b>{getDisplayName()}</b>
+					</a>
+				</li>
+				<li className="nav-item">
+					<a className="nav-link" onClick={this.clickLogout}>
+						Log Out
+					</a>
+				</li>
+			</ul>
+		);
+	}
+	clickLogout() {
+		logOut();
+		window.location.href = "/";
 	}
 	render() {
 		return (
@@ -22,18 +59,7 @@ class Navbar extends Component {
 						</a>
 					</li>
 				</ul>
-				<ul className="navbar-nav ml-auto">
-					<li className="nav-item">
-						<a className="nav-link" href="/login">
-							Log In
-						</a>
-					</li>
-					<li className="nav-item">
-						<a className="nav-link" href="/register">
-							Register
-						</a>
-					</li>
-				</ul>
+				{isLoggedIn() ? this.renderUser() : this.renderLogin()}
 			</nav>
 		);
 	}

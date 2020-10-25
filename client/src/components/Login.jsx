@@ -1,14 +1,55 @@
 import React, { Component } from "react";
 import "css/styles.css";
 import icon from "img/icon.png";
+import { saveLoginCredentials } from "./ClientAuth";
 
 class Login extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			example_state: "-",
+			username: "",
+			password: "",
+			error: "",
 		};
+
+		this.onChangeUsername = this.onChangeUsername.bind(this);
+		this.onChangePassword = this.onChangePassword.bind(this);
 	}
+	onChangeUsername(event) {
+		this.setState({ username: event.target.value });
+	}
+	onChangePassword(event) {
+		this.setState({ password: event.target.value });
+	}
+	login = (e) => {
+		e.preventDefault();
+		if (this.state.username.length === 0) {
+			this.setState({ error: "Please enter your username" });
+			return;
+		}
+		if (this.state.password.length === 0) {
+			this.setState({ error: "Please enter your password" });
+			return;
+		}
+		this.setState({ error: "" });
+		fetch(window.location.protocol + "//" + window.location.host + "/login", {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({
+				username: this.state.username,
+				password: this.state.password,
+			}),
+		})
+			.then((response) => response.json())
+			.then((data) => {
+				if (data.status === "Success") {
+					saveLoginCredentials(this.state.username, data.displayName, data.accessToken);
+					window.location.href = "/";
+				} else {
+					this.setState({ error: data.status });
+				}
+			});
+	};
 	render() {
 		return (
 			<div className="container">
@@ -27,14 +68,17 @@ class Login extends Component {
 						<div className="col-12 col-sm-9 col-md-7 col-lg-5 mx-auto">
 							<div className="card">
 								<h3 className="card-title">Login</h3>
-								<form action="/login" method="post">
+								<div className="error">{this.state.error}</div>
+								<form onSubmit={this.login}>
 									<div className="form-group">
 										<input
-											autoFocus
 											className="form-control"
 											type="text"
 											name="username"
 											placeholder="Username"
+											value={this.state.username}
+											onChange={this.onChangeUsername}
+											autoFocus
 										/>
 									</div>
 									<div className="form-group">
@@ -43,6 +87,8 @@ class Login extends Component {
 											type="password"
 											name="password"
 											placeholder="Password"
+											value={this.state.password}
+											onChange={this.onChangePassword}
 										/>
 									</div>
 									<input className="btn btn-primary" type="submit" value="Login" />
