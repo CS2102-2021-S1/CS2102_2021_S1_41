@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import "css/styles.css";
 import Navbar from "./Navbar";
+import { getAccessToken, isLoggedIn } from "./ClientAuth";
 
 class Index extends Component {
 	constructor(props) {
@@ -16,6 +17,18 @@ class Index extends Component {
 	handleOnFocus() {
 		//On focus handler
 	}
+	getPets() {
+		if (isLoggedIn()) {
+			fetch(window.location.protocol + "//" + window.location.host + "/getPets", {
+				method: "GET",
+				headers: { "Content-Type": "application/json", "Access-Token": getAccessToken() },
+			})
+				.then((response) => response.json())
+				.then((data) => {
+					console.log(data);
+				});
+		}
+	}
 	render() {
 		return (
 			<div className="container">
@@ -28,7 +41,9 @@ class Index extends Component {
 					<div className="row flex-grow-1">
 						<div className="col-12">
 							<div className="row wrapper flex-column flex-sm-row nav-size">
-								<main className="col-12 bg-faded py-3 rounded" />
+								<main className="col-12 bg-faded py-3 rounded">
+									<button onClick={this.getPets}>Hello</button>
+								</main>
 							</div>
 						</div>
 					</div>

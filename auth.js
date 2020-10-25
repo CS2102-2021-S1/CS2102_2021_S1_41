@@ -18,7 +18,7 @@ const auth = (db) =>	{
 	// This express middleware attaches `username` to the `req` object if a user is
 	// authenticated. This middleware expects a JWT token to be stored in the
 	// `Access-Token` header.
-	const jwtAuthenticationMiddleware = (req, res, next) => {
+	const jwtAuthenticationMiddleware = async (req, res, next) => {
 		const token = req.header('Access-Token');
 		if (!token) {
 			return next();
@@ -29,42 +29,29 @@ const auth = (db) =>	{
 			const { username } = decoded;
 			
 			let user = { username: "", isPetOwner: false, isCareTaker: false, isAdmin: false }
-			db.query('SELECT * FROM pet_owners WHERE username = $1', [username], (error, results) =>	{
-				if (!error)	{
-					if (results.rows.length == 1)
-						user.isPetOwner = true;
-				}
-			});
-			db.query('SELECT * FROM care_takers WHERE username = $1', [username], (error, results) =>	{
-				if (!error)	{
-					if (results.rows.length == 1)
-						user.isCareTaker = true;
-				}
-			});
-			db.query('SELECT * FROM pcs_administrators WHERE username = $1', [username], (error, results) =>	{
-				if (!error)	{
-					if (results.rows.length == 1)
-						user.isAdmin = true;
-				}
-			});
-			db.query('SELECT * FROM users WHERE username = $1', [username], (error, results) =>	{
-				if (!error)	{
-					if (results.rows.length == 1)	{
-						user.username = username;
-						req.user = user;
-					}
-				}
-			});
+			let res = await db.query('SELECT * FROM pet_owners WHERE username = $1', [username]);
+			if (res.rows.length == 1)
+				user.isPetOwner = true;
+			res = await db.query('SELECT * FROM care_takers WHERE username = $1', [username]);
+			if (res.rows.length == 1)
+				user.isCareTaker = true;
+			res = await db.query('SELECT * FROM pcs_administrators WHERE username = $1', [username]);
+			if (res.rows.length == 1)
+				user.isAdmin = true;
+			res = await db.query('SELECT * FROM users WHERE username = $1', [username]);
+			if (res.rows.length == 1)	{
+				user.username = username;
+				req.user = user;
+			}
 		} catch (e) {
 			return next();
 		}
-
-			next();
+		next();
 	};
 
 	// This middleware stops the request if a user is not authenticated.
 	async function isAuthenticatedMiddleware(req, res, next) {
-		if (req.username) {
+		if (req.user) {
 			return next();
 		}
 
