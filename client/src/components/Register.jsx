@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import "css/styles.css";
 import icon from "img/icon.png";
+import { saveLoginCredentials } from "./ClientAuth";
 
 class Register extends Component {
 	constructor(props) {
@@ -49,7 +50,6 @@ class Register extends Component {
 		}
 		fetch(window.location.protocol + "//" + window.location.host + "/register", {
 			method: "POST",
-			mode: "cors",
 			headers: { "Content-Type": "application/json" },
 			body: JSON.stringify({
 				username: this.state.username,
@@ -60,9 +60,26 @@ class Register extends Component {
 			.then((response) => response.json())
 			.then((data) => {
 				if (data.status === "registered") {
-					this.setState({ username: "", display_name: "", password: "", confirm: "" });
-					alert("Registered");
-				} else alert("Registration failed");
+					fetch(window.location.protocol + "//" + window.location.host + "/login", {
+						method: "POST",
+						headers: { "Content-Type": "application/json" },
+						body: JSON.stringify({
+							username: this.state.username,
+							password: this.state.password,
+						}),
+					})
+						.then((response) => response.json())
+						.then((data) => {
+							if (data.status === "Success") {
+								saveLoginCredentials(this.state.username, data.displayName, data.accessToken);
+								window.location.href = "/";
+							} else {
+								this.setState({ error: data.status });
+							}
+						});
+				} else {
+					this.setState({ errpr: "Failed to register." });
+				}
 			});
 	};
 	render() {

@@ -5,7 +5,8 @@ const bodyParser = require('body-parser');
 const yargs = require('yargs');
 const { Client } = require('pg');
 const crypto = require('crypto');
-
+const path = require('path');
+const auth = require(path.resolve(__dirname, "./auth.js"));
 const db = new Client({
 	user: 'postgres',
 	host: 'petcare.places.sg',
@@ -17,12 +18,14 @@ const db = new Client({
 db.connect();
 console.log("Connected to the database.");
 
+const [jwtAuthenticationMiddleware, isAuthenticatedMiddleware, jwtLogin] = auth.auth(db);
 
 
 const argv = yargs(process.argv).argv;
 const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+app.use(jwtAuthenticationMiddleware);
 const server = http.createServer(app);
 const port = argv.port || 8080;
 
@@ -37,6 +40,8 @@ app.post("/register", (req, res) =>	{
 			res.send({status: 'failed'});
 	});
 });
+
+app.post("/login", jwtLogin);
 
 server.listen(port, () =>
 	console.log(`Backend server started on port ${port}`)
