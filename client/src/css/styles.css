@@ -261,6 +261,10 @@ main {
 	flex-direction: column;
 }
 
+main p {
+	font-size: 20px;
+}
+
 #switch-add {
 	position: absolute;
 	bottom: 20px;
@@ -385,4 +389,17 @@ main {
 
 .nav-link:hover {
 	cursor: pointer;
+}
+
+.page {
+	min-height: calc(100vh - 100px);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+	font-weight: 600;
 }

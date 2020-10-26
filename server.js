@@ -50,11 +50,23 @@ app.post("/register", (req, res) =>	{
 
 app.post("/login", jwtLogin);
 
+app.get("/caretakers", (req, res) =>	{
+	const qstring = "SELECT a.care_taker, employee_type, pet_type, price, area, start_date, end_date\n" +
+        "FROM availabilities a\n" +
+        "LEFT JOIN care_takers c ON a.care_taker = c.username\n" +
+        "LEFT JOIN prices p ON a.care_taker = p.care_taker;";
+    db.query(qstring, (err, result) => {
+        if (err) {
+            console.log(err);
+            res.status(400).send(err);
+        }
+        res.send(JSON.stringify(result.rows));
+    });
+});
+
 //Use isAuthenticationMiddleware to check if user is logged in (Server side check)
 app.get("/getPets", isAuthenticatedMiddleware, (req, res) =>	{
 	console.log(req.user);
-	console.log(req.user.is);
-	res.send({status: 'Wow this is pet!'});
 });
 
 server.listen(port, () =>

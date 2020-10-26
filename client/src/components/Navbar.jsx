@@ -54,8 +54,8 @@ class Navbar extends Component {
 				</a>
 				<ul className="navbar-nav">
 					<li className="nav-item">
-						<a className="nav-link" href="/">
-							Services
+						<a className="nav-link" href="/caretakers">
+							Services and Pricing
 						</a>
 					</li>
 				</ul>
