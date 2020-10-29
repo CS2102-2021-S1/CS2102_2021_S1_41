@@ -65,8 +65,27 @@ app.get("/caretakers", (req, res) =>	{
 });
 
 //Use isAuthenticationMiddleware to check if user is logged in (Server side check)
-app.get("/getPets", isAuthenticatedMiddleware, (req, res) =>	{
-	console.log(req.user);
+app.get("/getOwnerPets", isAuthenticatedMiddleware, (req, res) =>	{
+	//console.log(req.user);
+	db.query('SELECT pet_name, pet_type FROM pets WHERE username = $1', [req.user.username], (err, dbres) => {
+		if (err) {
+		  	console.log(err.stack)
+		} else {
+			//console.log(res.rows[0])
+			res.send(dbres.rows);
+		}
+	});
+});
+
+app.post("/addPet", isAuthenticatedMiddleware, (req, res) =>	{
+	db.query('INSERT INTO pets(username, pet_name, pet_type, special_req) VALUES ($1, $2, $3, $4)', 
+	[req.user.username, req.body.pet_name, req.body.pet_type, req.body.special_req], (error, results) =>	{
+		if (!error)	{
+			res.send({status: 'success'});
+		}
+		else
+			res.send({status: 'failed'});
+	});
 });
 
 server.listen(port, () =>
