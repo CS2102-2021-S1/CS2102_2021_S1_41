@@ -3,6 +3,8 @@ import "css/styles.css";
 import Navbar from "./Navbar";
 import icon_ex1 from "img/expensive_1.png";
 import icon_ex2 from "img/expensive_2.png";
+import available from "img/available.png";
+import unavailable from "img/unavailable.png";
 
 class Caretakers extends Component {
 	constructor(props) {
@@ -79,6 +81,7 @@ class Caretakers extends Component {
                                         Current Available Services
                                     </div>
                                     <div class="class-body">
+                                        care taker available: <img src={available} />, care taker unavailable: <img src={unavailable} />
                                         <div class="table-responsive">
                                             <table className="table table-bordered">
                                                 <thead>
@@ -95,7 +98,7 @@ class Caretakers extends Component {
                                                 <tbody>
                                                     {this.state.caretakers.map((care) => (
                                                         <tr>
-                                                            <td>{care.care_taker}</td>
+                                                            <td>{this.check_avail(care.start_date, care.end_date)}{care.care_taker}</td>
                                                             <td>{care.employee_type}</td>
                                                             <td>{care.pet_type}</td>
                                                             <td>{care.price}</td>
@@ -152,6 +155,17 @@ class Caretakers extends Component {
             return <img src={icon_ex2} width="50px" />;
         } else {
             return <img src={icon_ex1} width="50px" />;
+        }
+    }
+    check_avail(start, end) {
+        var today = new Date();
+        console.log(today);
+        start = new Date(start);
+        end = new Date(end);
+        if (today >= start && today <= end) {
+            return <img src={available} />;
+        } else {
+            return <img src={unavailable} />;
         }
     }
 }
