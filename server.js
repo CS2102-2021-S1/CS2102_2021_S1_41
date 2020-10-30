@@ -88,6 +88,17 @@ app.post("/addPet", isAuthenticatedMiddleware, (req, res) =>	{
 	});
 });
 
+app.post("/deletePet", isAuthenticatedMiddleware, (req, res) =>	{
+	db.query('DELETE FROM pets WHERE username = $1 and pet_name = $2', 
+	[req.user.username, req.body.pet_name], (error, results) =>	{
+		if (!error)	{
+			res.send({status: 'success'});
+		}
+		else
+			res.send({status: 'failed'});
+	});
+});
+
 server.listen(port, () =>
 	console.log(`Backend server started on port ${port}`)
 );

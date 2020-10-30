@@ -473,7 +473,19 @@ thead tr td {
 	width: 30px;
 	height: 30px;
 	border: 1px solid black;
-	font-size: 25px;
+	font-size: 15px;
 	line-height: 1;
 	text-align: center;
+}
+
+.del-btn {
+	border: none;
+	background-color: rgba(0, 0, 0, 0);
+	color: rgb(170, 170, 170);
+}
+
+.del-btn:hover {
+	border: none !important;
+	background-color: rgba(0, 0, 0, 0);
+	color: rgb(170, 170, 170);
 }

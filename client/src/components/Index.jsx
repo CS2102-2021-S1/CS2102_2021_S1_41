@@ -1,10 +1,11 @@
 import React, { Component } from "react";
 import "css/styles.css";
 import Navbar from "./Navbar";
-import { getAccessToken, getDisplayName, isLoggedIn } from "./ClientAuth";
+import { getAccessToken, getDisplayName, isLoggedIn, logOut } from "./ClientAuth";
 import dog from "img/dog.jpg";
 import cat from "img/cat.jpg";
 import hamster from "img/hamster.jpg";
+import { FaPlus, FaTrash } from "react-icons/fa";
 
 class Index extends Component {
 	constructor(props) {
@@ -33,6 +34,10 @@ class Index extends Component {
 			})
 				.then((response) => response.json())
 				.then((data) => {
+					if (data.error === "Not Authenticated") {
+						logOut();
+						window.location.href = "/";
+					}
 					if (Array.isArray(data)) {
 						this.setState({ pets: data });
 					}
@@ -84,6 +89,10 @@ class Index extends Component {
 		})
 			.then((response) => response.json())
 			.then((data) => {
+				if (data.error === "Not Authenticated") {
+					logOut();
+					window.location.href = "/";
+				}
 				if (data.status === "success") {
 					alert("Pet Added!");
 					this.setState({
@@ -99,6 +108,28 @@ class Index extends Component {
 				}
 			});
 	};
+	deletePet(e, pet) {
+		e.preventDefault();
+		fetch(window.location.protocol + "//" + window.location.host + "/deletePet", {
+			method: "POST",
+			headers: { "Content-Type": "application/json", "Access-Token": getAccessToken() },
+			body: JSON.stringify({
+				pet_name: pet.pet_name,
+			}),
+		})
+			.then((response) => response.json())
+			.then((data) => {
+				if (data.error === "Not Authenticated") {
+					logOut();
+					window.location.href = "/login";
+				}
+				if (data.status === "success") {
+					this.getOwnerPets();
+				} else {
+					alert("Failed to remove pet");
+				}
+			});
+	}
 	renderAddPet() {
 		return (
 			<div className="modal" role="dialog">
@@ -172,23 +203,29 @@ class Index extends Component {
 						<div className="flex-fixed">
 							<h5 className="d-inline-block">Your Pets</h5>
 							<button className="add-btn" onClick={() => this.setState({ showAddPet: true })}>
-								+
+								<FaPlus />
 							</button>
 						</div>
 						<div className="pet-box">
 							<div className="row pet-row-header">
-								<div className="col-7">
+								<div className="col-6">
 									<b>Name</b>
 								</div>
 								<div className="col-5">
 									<b>Type</b>
 								</div>
+								<div className="col-1" />
 							</div>
 							<div className="pet-box-scroll">
 								{this.state.pets.map((pet) => (
 									<div className="row pet-row">
-										<div className="col-7">{pet.pet_name}</div>
+										<div className="col-6">{pet.pet_name}</div>
 										<div className="col-5">{pet.pet_type}</div>
+										<div className="col-1">
+											<button className="del-btn" onClick={(e) => this.deletePet(e, pet)}>
+												<FaTrash />
+											</button>
+										</div>
 									</div>
 								))}
 							</div>

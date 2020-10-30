@@ -54,9 +54,7 @@ const auth = (db) =>	{
 		if (req.user) {
 			return next();
 		}
-
-		res.status(401);
-		res.json({ error: 'User not authenticated' });
+		res.json({ error: 'Not Authenticated' });
 	}
 
 	// This endpoints generates and returns a JWT access token given authentication

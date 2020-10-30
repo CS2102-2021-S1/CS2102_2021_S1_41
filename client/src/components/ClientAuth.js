@@ -37,4 +37,7 @@ export function logOut()    {
     localStorage.setItem("accessToken", "");
     localStorage.setItem("loggedIn", "0");
     localStorage.setItem("displayName", "");
+    localStorage.setItem("isPetOwner", false);
+    localStorage.setItem("isCareTaker", false);
+    localStorage.setItem("isAdmin", false);
 }
