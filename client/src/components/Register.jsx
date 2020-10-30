@@ -78,7 +78,7 @@ class Register extends Component {
 							}
 						});
 				} else {
-					this.setState({ errpr: "Failed to register." });
+					this.setState({ error: "Failed to register." });
 				}
 			});
 	};

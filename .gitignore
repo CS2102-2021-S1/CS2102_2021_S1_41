@@ -13,5 +13,10 @@ yarn-error.log*
 *.rar
 
 /.idea
+<<<<<<< HEAD
 *.lock
 docs/guide/
+=======
+
+*.env
+>>>>>>> master

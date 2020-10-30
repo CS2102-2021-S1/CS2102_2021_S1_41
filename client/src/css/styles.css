@@ -309,6 +309,10 @@ main {
 	flex-direction: column;
 }
 
+main p {
+	font-size: 20px;
+}
+
 #switch-add {
 	position: absolute;
 	bottom: 20px;
@@ -433,4 +437,103 @@ main {
 
 .nav-link:hover {
 	cursor: pointer;
+}
+
+.page {
+	min-height: calc(100vh - 100px);
+}
+
+h1,
+h2 {
+	font-weight: 600;
+}
+
+.dashboard-card {
+	background-color: rgb(240, 240, 240);
+	padding: 10px;
+	box-shadow: 0 3px 2px -1px rgba(0, 0, 0, 0.8), 0 2px 5px -2px rgba(0, 0, 0, 0.8);
+	height: 250px;
+}
+
+.pet-display {
+	display: flex;
+	flex-direction: column;
+}
+
+.pet-box {
+	background-color: white;
+	margin: 0 !important;
+	overflow-y: hidden;
+	border-radius: 5px;
+	display: flex;
+	flex-direction: column;
+	flex-grow: 1;
+}
+
+.pet-row,
+.pet-row-header {
+	width: 100%;
+	margin: 0;
+	overflow-x: hidden;
+	padding-left: 5px;
+	padding-right: 5px;
+	flex: 0 0 40px;
+}
+
+.pet-row-header {
+	padding-top: 5px;
+	padding-right: 30px;
+	border-bottom: 1px solid rgb(200, 200, 200);
+	overflow-y: hidden;
+}
+
+.pet-row > div {
+	padding: 3px !important;
+}
+
+.pet-row-header > div {
+	padding: 3px !important;
+}
+
+.pet-box-scroll {
+	overflow-y: scroll;
+	flex-grow: 1;
+}
+
+thead tr td {
+	font-weight: 600;
+}
+
+.flex-fixed {
+	flex: 0 0;
+	display: flex;
+}
+
+.modal {
+	display: inherit;
+	background-color: rgba(0, 0, 0, 0.5);
+}
+
+.add-btn {
+	margin-left: auto;
+	font-weight: 600;
+	border-radius: 15px;
+	width: 30px;
+	height: 30px;
+	border: 1px solid black;
+	font-size: 15px;
+	line-height: 1;
+	text-align: center;
+}
+
+.del-btn {
+	border: none;
+	background-color: rgba(0, 0, 0, 0);
+	color: rgb(170, 170, 170);
+}
+
+.del-btn:hover {
+	border: none !important;
+	background-color: rgba(0, 0, 0, 0);
+	color: rgb(170, 170, 170);
 }

@@ -43,7 +43,14 @@ class Login extends Component {
 			.then((response) => response.json())
 			.then((data) => {
 				if (data.status === "Success") {
-					saveLoginCredentials(this.state.username, data.displayName, data.accessToken);
+					saveLoginCredentials(
+						this.state.username,
+						data.displayName,
+						data.accessToken,
+						data.isPetOwner,
+						data.isCareTaker,
+						data.isAdmin
+					);
 					window.location.href = "/";
 				} else {
 					this.setState({ error: data.status });
