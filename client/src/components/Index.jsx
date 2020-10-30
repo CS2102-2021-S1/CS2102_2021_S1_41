@@ -11,44 +11,16 @@ class Index extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-<<<<<<< HEAD
-			example_state: "-",
-			caretakers: [],
-=======
 			showAddPet: false,
 			pets: [],
 			new_pet_name: "",
 			new_pet_type: "",
 			new_pet_special_req: "",
 			new_pet_error: "",
->>>>>>> master
 		};
 	}
 
 	componentDidMount() {
-<<<<<<< HEAD
-		//Initialize component
-		fetch('/caretakers/list')
-			.then(response => {
-				if (!response.ok) {
-					throw Error('GET request failed.');
-				}
-				return response;
-			})
-			.then(data => data.json())
-			.then(data => {
-				this.setState({
-					caretakers: data
-				});
-				console.log('parsed json', data);
-			}, (ex) => {
-				this.setState({
-					requestError: true
-				});
-				console.log('parsing failed', ex);
-			})
-=======
->>>>>>> master
 		window.addEventListener("focus", this.handleOnFocus);
 		this.getOwnerPets();
 	}
@@ -281,44 +253,8 @@ class Index extends Component {
 					<div className="row page">
 						<div className="col-12">
 							<div className="row wrapper flex-column flex-sm-row nav-size">
-<<<<<<< HEAD
-								<main className="col-12 bg-faded py-3 rounded">
-									<div class="card">
-										<div class="card-header">
-											Current Care Taker Information
-										</div>
-										<div class="table-responsive">
-											<table class="table table-bordered">
-												<thead>
-													<tr>
-														<td>Care Taker</td>
-														<td>Employee Type</td>
-														<td>Pet Type</td>
-														<td>Price (S$)</td>
-														<td>Area/Region</td>
-														<td>Start Date</td>
-														<td>End Date</td>
-													</tr>
-												</thead>
-												<tbody>
-												{this.state.caretakers.map(care =>
-													<tr>
-														<td>{care.care_taker}</td>
-														<td>{care.employee_type}</td>
-														<td>{care.pet_type}</td>
-														<td>{care.price}</td>
-														<td>{care.area}</td>
-														<td>{care.start_date}</td>
-														<td>{care.end_date}</td>
-													</tr>)}
-												</tbody>
-											</table>
-										</div>
-									</div>
-=======
 								<main className="col-12 bg-faded p-4 rounded">
 									{isLoggedIn() ? this.renderDashboard() : this.renderIndex()}
->>>>>>> master
 								</main>
 							</div>
 						</div>
