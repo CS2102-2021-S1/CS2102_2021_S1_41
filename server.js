@@ -65,6 +65,25 @@ app.get("/caretakers", (req, res) =>	{
     });
 });
 
+//Gihun
+//30-10-2020
+//retrieving average price for each pet type and area
+app.get("/getAveragePrice", (req, res) => {
+    const qstring = "SELECT a.pet_type, area, average_price, price AS base_price, \n" +
+    "CASE WHEN price <= average_price THEN 1 ELSE 0 END AS ishigh\n" + 
+    "FROM base_prices b LEFT JOIN\n" +
+    "(SELECT pet_type AS pet_type, area, ROUND(AVG(p.price)::NUMERIC,2) AS average_price\n" +
+    "FROM prices p, care_takers c\n" +
+    "GROUP BY pet_type, area) a ON a.pet_type = b.pet_type;"
+    db.query(qstring, (err, result) => {
+        if (err) {
+            console.log(err);
+            res.status(400).send(err);
+        }
+        res.send(JSON.stringify(result.rows));
+    });
+});
+
 //Use isAuthenticationMiddleware to check if user is logged in (Server side check)
 app.get("/getOwnerPets", isAuthenticatedMiddleware, (req, res) =>	{
 	//console.log(req.user);
