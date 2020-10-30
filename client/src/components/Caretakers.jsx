@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import "css/styles.css";
 import Navbar from "./Navbar";
+import icon_ex1 from "img/expensive_1.png";
+import icon_ex2 from "img/expensive_2.png";
 
 class Caretakers extends Component {
 	constructor(props) {
@@ -120,7 +122,7 @@ class Caretakers extends Component {
                                                         <td>Area</td>
                                                         <td>Average Price (S$)</td>
                                                         <td>Base Price (S$)</td>
-                                                        <td>High/Low</td>
+                                                        <td>Expensive/Low</td>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -130,7 +132,7 @@ class Caretakers extends Component {
                                                             <td>{info.area}</td>
                                                             <td>{info.average_price}</td>
                                                             <td>{info.base_price}</td>
-                                                            <td>{info.ishigh}</td>
+                                                            <td>{this.replace_ishigh_image(info.ishigh)}</td>
                                                         </tr>
                                                     ))}
                                                 </tbody>
@@ -144,7 +146,14 @@ class Caretakers extends Component {
 				</div>
 			</div>
 		);
-	}
+    }
+    replace_ishigh_image(val) {
+        if (val == 1) {
+            return <img src={icon_ex2} width="50px" />;
+        } else {
+            return <img src={icon_ex1} width="50px" />;
+        }
+    }
 }
 
 export default Caretakers;
