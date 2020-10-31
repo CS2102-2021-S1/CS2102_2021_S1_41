@@ -117,6 +117,10 @@ class Caretakers extends Component {
                                         Average Price based on Pet Type and Area
                                     </div>
                                     <div class="class-body">
+                                        <p>
+                                            Average price based on offered price by care takers for each pet type and available service area. <br/>
+                                            Base price set by default by PetCare system.
+                                        </p>
                                         <div class="table-responsive">
                                             <table className="table table-bordered">
                                                 <thead>
@@ -125,7 +129,7 @@ class Caretakers extends Component {
                                                         <td>Area</td>
                                                         <td>Average Price (S$)</td>
                                                         <td>Base Price (S$)</td>
-                                                        <td>Expensive/Low</td>
+                                                        {/* <td>Expensive/Low</td> */}
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -135,7 +139,7 @@ class Caretakers extends Component {
                                                             <td>{info.area}</td>
                                                             <td>{info.average_price}</td>
                                                             <td>{info.base_price}</td>
-                                                            <td>{this.replace_ishigh_image(info.ishigh)}</td>
+                                                            {/* <td>{this.replace_ishigh_image(info.ishigh)}</td> */}
                                                         </tr>
                                                     ))}
                                                 </tbody>

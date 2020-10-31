@@ -52,7 +52,8 @@ app.post("/register", (req, res) =>	{
 app.post("/login", jwtLogin);
 
 app.get("/caretakers", (req, res) =>	{
-	const qstring = "SELECT a.care_taker, employee_type, pet_type, price, area, start_date, end_date\n" +
+	const qstring = "SELECT a.care_taker, employee_type, pet_type, price, area,\n" +
+	    "TO_CHAR(start_date, 'DD-MON-YYYY') AS start_date, TO_CHAR(end_date, 'DD-MON-YYYY') AS end_date\n" +
         "FROM availabilities a\n" +
         "LEFT JOIN care_takers c ON a.care_taker = c.username\n" +
         "LEFT JOIN prices p ON a.care_taker = p.care_taker;";
