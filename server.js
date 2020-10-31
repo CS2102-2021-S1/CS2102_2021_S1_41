@@ -73,7 +73,7 @@ app.get("/getAveragePrice", (req, res) => {
     "FROM base_prices b LEFT JOIN\n" +
     "(SELECT pet_type AS pet_type, area, ROUND(AVG(p.price)::NUMERIC,2) AS average_price\n" +
     "FROM prices p, care_takers c\n" +
-    "GROUP BY pet_type, area) a ON a.pet_type = b.pet_type;"
+    "GROUP BY pet_type, area) a ON a.pet_type = b.pet_type;";
     db.query(qstring, (err, result) => {
         if (err) {
             console.log(err);
@@ -81,6 +81,18 @@ app.get("/getAveragePrice", (req, res) => {
         }
         res.send(JSON.stringify(result.rows));
     });
+});
+
+//retrieving unique areas in all care_takers available
+app.get("/getAreas", (req, res) => {
+	const qstring = "SELECT DISTINCT area FROM care_takers;";
+	db.query(qstring, (err, result) => {
+		if (err) {
+			console.log(err);
+			res.status(400).send(err);
+		}
+		res.send(JSON.stringify(result.rows));
+	});
 });
 
 //Use isAuthenticationMiddleware to check if user is logged in (Server side check)

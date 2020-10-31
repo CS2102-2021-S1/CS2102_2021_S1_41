@@ -1,6 +1,10 @@
 import React, { Component } from "react";
 import "css/styles.css";
 import Navbar from "./Navbar";
+import Dropdown from 'react-dropdown';
+import Table from 'react-bootstrap/Table'; 
+import 'react-dropdown/style.css';
+
 import icon_ex1 from "img/expensive_1.png";
 import icon_ex2 from "img/expensive_2.png";
 import available from "img/available.png";
@@ -12,9 +16,33 @@ class Caretakers extends Component {
 		this.state = {
             caretakers: [],
             priceInfo: [],
+            areas: [],
 		};
 	}
 	componentDidMount() {
+        fetch("/getAreas")
+            .then((response) => {
+                if (!response.ok) {
+                    throw Error("GET request failed");
+                }
+                return response;
+            })
+            .then((data) => data.json())
+            .then(
+                (data) => {
+                    this.setState({
+                        areas: data.map(area => area.area),
+                    })
+                    this.state.areas.push('All');
+                    console.log("parsed json", data);
+                },
+                (ex) => {
+                    this.setState({
+                        requestError: true,
+                    });
+                    console.log("parsing failed", ex);
+                }
+            );
 		fetch("/caretakers")
 			.then((response) => {
 				if (!response.ok) {
@@ -36,7 +64,7 @@ class Caretakers extends Component {
 					});
 					console.log("parsing failed", ex);
 				}
-        );
+            );
         fetch("/getAveragePrice")
             .then((response) => {
                 if (!response.ok) {
@@ -58,7 +86,7 @@ class Caretakers extends Component {
                     });
                     console.log("parsing failed", ex);
                 }
-            )
+            );
 		window.addEventListener("focus", this.handleOnFocus);
 	}
 	handleOnFocus() {
@@ -81,9 +109,15 @@ class Caretakers extends Component {
                                         Current Available Services
                                     </div>
                                     <div class="class-body">
-                                        care taker available: <img src={available} />, care taker unavailable: <img src={unavailable} />
+                                        care taker available: <img src={available} alt=""/> care taker unavailable: <img src={unavailable} alt=""/><br/>
+                                        {/* <table>
+                                            <tr>
+                                                <td>Filter by Area: </td>
+                                                <td><Dropdown options={this.state.areas} onChange={this.filterList} value='All' placeholder="Select an option" /></td>
+                                            </tr>
+                                        </table> */}
                                         <div class="table-responsive">
-                                            <table className="table table-bordered">
+                                            <Table striped bordered hover>
                                                 <thead>
                                                     <tr>
                                                         <td>Care Taker</td>
@@ -108,7 +142,7 @@ class Caretakers extends Component {
                                                         </tr>
                                                     ))}
                                                 </tbody>
-                                            </table>
+                                            </Table>
                                         </div>
                                     </div>
                                 </div>
@@ -122,7 +156,7 @@ class Caretakers extends Component {
                                             Base price set by default by PetCare system.
                                         </p>
                                         <div class="table-responsive">
-                                            <table className="table table-bordered">
+                                            <Table striped bordered hover>
                                                 <thead>
                                                     <tr>
                                                         <td>Pet Type</td>
@@ -143,7 +177,7 @@ class Caretakers extends Component {
                                                         </tr>
                                                     ))}
                                                 </tbody>
-                                            </table>
+                                            </Table>
                                         </div>
                                     </div>
                                 </div>
@@ -155,10 +189,10 @@ class Caretakers extends Component {
 		);
     }
     replace_ishigh_image(val) {
-        if (val == 1) {
-            return <img src={icon_ex2} width="50px" />;
+        if (val === 1) {
+            return <img src={icon_ex2} width="50px" alt=""/>;
         } else {
-            return <img src={icon_ex1} width="50px" />;
+            return <img src={icon_ex1} width="50px" alt=""/>;
         }
     }
     check_avail(start, end) {
@@ -167,9 +201,9 @@ class Caretakers extends Component {
         start = new Date(start);
         end = new Date(end);
         if (today >= start && today <= end) {
-            return <img src={available} />;
+            return <img src={available} alt=""/>;
         } else {
-            return <img src={unavailable} />;
+            return <img src={unavailable} alt=""/>;
         }
     }
 }
