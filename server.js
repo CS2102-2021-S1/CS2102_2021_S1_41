@@ -77,6 +77,21 @@ app.get("/getOwnerPets", isAuthenticatedMiddleware, (req, res) =>	{
 	});
 });
 
+app.get("/getBasePrices", isAuthenticatedMiddleware, (req, res) =>	{
+	//console.log(req.user);
+	if(!req.user.isAdmin) {
+        res.send({status: 'not admin'});
+        return;
+    }
+	db.query('SELECT pet_type, price FROM base_prices', (err, dbres) => {
+		if (err) {
+		  	console.log(err.stack);
+		} else {
+			res.send(dbres.rows);
+		}
+	});
+});
+
 app.post("/addPet", isAuthenticatedMiddleware, (req, res) =>	{
 	db.query('INSERT INTO pets(username, pet_name, pet_type, special_req) VALUES ($1, $2, $3, $4)', 
 	[req.user.username, req.body.pet_name, req.body.pet_type, req.body.special_req], (error, results) =>	{
@@ -91,6 +106,37 @@ app.post("/addPet", isAuthenticatedMiddleware, (req, res) =>	{
 app.post("/deletePet", isAuthenticatedMiddleware, (req, res) =>	{
 	db.query('DELETE FROM pets WHERE username = $1 and pet_name = $2', 
 	[req.user.username, req.body.pet_name], (error, results) =>	{
+		if (!error)	{
+			res.send({status: 'success'});
+		}
+		else
+			res.send({status: 'failed'});
+	});
+});
+
+app.post("/addBasePrice", isAuthenticatedMiddleware, (req, res) =>	{
+    console.log(req.user);
+    if(!req.user.isAdmin){
+        res.send({status: 'not admin'});
+        return;
+    }
+	db.query('INSERT INTO base_prices(pet_type, price) VALUES ($1, $2)',
+	[req.body.base_price_pet_type, req.body.base_price_price], (error, results) =>	{
+		if (!error)	{
+			res.send({status: 'success'});
+		}
+		else
+			res.send({status: 'failed'});
+	});
+});
+
+app.post("/deleteBasePrice", isAuthenticatedMiddleware, (req, res) =>	{
+    if(!req.user.isAdmin){
+        res.send({status: 'not admin'});
+        return;
+    }
+	db.query('DELETE FROM base_prices WHERE pet_type = $1',
+	[req.body.pet_type], (error, results) =>	{
 		if (!error)	{
 			res.send({status: 'success'});
 		}
