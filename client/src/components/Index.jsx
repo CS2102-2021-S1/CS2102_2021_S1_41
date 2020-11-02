@@ -19,10 +19,12 @@ class Index extends Component {
 			new_pet_error: "",
 		};
 	}
+
 	componentDidMount() {
 		window.addEventListener("focus", this.handleOnFocus);
 		this.getOwnerPets();
 	}
+
 	handleOnFocus() {
 		//On focus handler
 	}

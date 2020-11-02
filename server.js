@@ -20,7 +20,6 @@ console.log("Connected to the database.");
 
 const [jwtAuthenticationMiddleware, isAuthenticatedMiddleware, jwtLogin] = auth.auth(db);
 
-
 const argv = yargs(process.argv).argv;
 const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -51,7 +50,8 @@ app.post("/register", (req, res) =>	{
 app.post("/login", jwtLogin);
 
 app.get("/caretakers", (req, res) =>	{
-	const qstring = "SELECT a.care_taker, employee_type, pet_type, price, area, start_date, end_date\n" +
+	const qstring = "SELECT a.care_taker, employee_type, pet_type, price, area,\n" +
+	    "TO_CHAR(start_date, 'DD-MON-YYYY') AS start_date, TO_CHAR(end_date, 'DD-MON-YYYY') AS end_date\n" +
         "FROM availabilities a\n" +
         "LEFT JOIN care_takers c ON a.care_taker = c.username\n" +
         "LEFT JOIN prices p ON a.care_taker = p.care_taker;";
@@ -62,6 +62,37 @@ app.get("/caretakers", (req, res) =>	{
         }
         res.send(JSON.stringify(result.rows));
     });
+});
+
+//Gihun
+//30-10-2020
+//retrieving average price for each pet type and area
+app.get("/getAveragePrice", (req, res) => {
+    const qstring = "SELECT a.pet_type, area, average_price, price AS base_price, \n" +
+    "CASE WHEN price <= average_price THEN 1 ELSE 0 END AS ishigh\n" + 
+    "FROM base_prices b LEFT JOIN\n" +
+    "(SELECT pet_type AS pet_type, area, ROUND(AVG(p.price)::NUMERIC,2) AS average_price\n" +
+    "FROM prices p, care_takers c\n" +
+    "GROUP BY pet_type, area) a ON a.pet_type = b.pet_type;";
+    db.query(qstring, (err, result) => {
+        if (err) {
+            console.log(err);
+            res.status(400).send(err);
+        }
+        res.send(JSON.stringify(result.rows));
+    });
+});
+
+//retrieving unique areas in all care_takers available
+app.get("/getAreas", (req, res) => {
+	const qstring = "SELECT DISTINCT area FROM care_takers;";
+	db.query(qstring, (err, result) => {
+		if (err) {
+			console.log(err);
+			res.status(400).send(err);
+		}
+		res.send(JSON.stringify(result.rows));
+	});
 });
 
 //Use isAuthenticationMiddleware to check if user is logged in (Server side check)
