@@ -437,7 +437,7 @@ class Index extends Component {
 							<div className="row wrapper flex-column flex-sm-row nav-size">
 								<main className="col-12 bg-faded p-4 rounded">
 									{isLoggedIn() ? this.renderDashboard() : this.renderIndex()}
-									{isLoggedIn() ? this.renderAdminDashboard() : ""}
+									{isAdmin() ? this.renderAdminDashboard() : ""}
 								</main>
 							</div>
 						</div>
