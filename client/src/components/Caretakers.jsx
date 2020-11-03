@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import "css/styles.css";
 import Navbar from "./Navbar";
-import Dropdown from "react-dropdown";
 import Table from "react-bootstrap/Table";
 import "react-dropdown/style.css";
 
