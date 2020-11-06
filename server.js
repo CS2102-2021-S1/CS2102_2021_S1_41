@@ -146,7 +146,6 @@ app.post("/deletePet", isAuthenticatedMiddleware, (req, res) =>	{
 });
 
 app.post("/addBasePrice", isAuthenticatedMiddleware, (req, res) =>	{
-    console.log(req.user);
     if(!req.user.isAdmin){
         res.send({status: 'not admin'});
         return;
@@ -155,6 +154,28 @@ app.post("/addBasePrice", isAuthenticatedMiddleware, (req, res) =>	{
 	[req.body.base_price_pet_type, req.body.base_price_price], (error, results) =>	{
 		if (!error)	{
 			res.send({status: 'success'});
+		}
+		else
+			res.send({status: 'failed'});
+	});
+});
+
+app.post("/editBasePrice", isAuthenticatedMiddleware, (req, res) =>	{
+    if(!req.user.isAdmin){
+        res.send({status: 'not admin'});
+        return;
+    }
+	db.query('UPDATE base_prices SET price = $1 WHERE pet_type = $2',
+	[req.body.new_price, req.body.pet_type], (error, results) =>	{
+		if (!error)	{
+			db.query('UPDATE prices SET price = $1 WHERE pet_type = $2 AND price < $3',
+			[req.body.new_price, req.body.pet_type, req.body.new_price], (error, results) =>	{
+			if (!error)	{
+				res.send({status: 'success'});
+			}
+			else
+				res.send({status: 'failed'});
+	});
 		}
 		else
 			res.send({status: 'failed'});
