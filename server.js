@@ -108,6 +108,23 @@ app.get("/getOwnerPets", isAuthenticatedMiddleware, (req, res) =>	{
 	});
 });
 
+app.get("/getUsers", isAuthenticatedMiddleware, (req, res) =>	{
+    if(!req.user.isAdmin){
+        res.send({status: 'not admin'});
+        return;
+    }
+	db.query(`SELECT users.username, users.display_name, pet_owners.username as is_owner, care_takers.username as is_care_taker, pcs_administrators.username as is_admin FROM 
+	users left join pcs_administrators on users.username = pcs_administrators.username
+	left join pet_owners on users.username = pet_owners.username
+	left join care_takers on users.username = care_takers.username`, (err, dbres) => {
+		if (err) {
+		  	console.log(err.stack)
+		} else {
+			res.send(dbres.rows);
+		}
+	});
+});
+
 app.get("/getBasePrices", isAuthenticatedMiddleware, (req, res) =>	{
 	//console.log(req.user);
 	if(!req.user.isAdmin) {
@@ -164,18 +181,44 @@ app.post("/editBasePrice", isAuthenticatedMiddleware, (req, res) =>	{
     if(!req.user.isAdmin){
         res.send({status: 'not admin'});
         return;
-    }
+	}
+	let good_price = parseFloat(req.body.new_price) * 1.2;
+	good_price = good_price.toString();
 	db.query('UPDATE base_prices SET price = $1 WHERE pet_type = $2',
 	[req.body.new_price, req.body.pet_type], (error, results) =>	{
 		if (!error)	{
 			db.query('UPDATE prices SET price = $1 WHERE pet_type = $2 AND price < $3',
 			[req.body.new_price, req.body.pet_type, req.body.new_price], (error, results) =>	{
 			if (!error)	{
-				res.send({status: 'success'});
+				db.query(`UPDATE prices
+				SET price = $1
+				WHERE pet_type = $2 AND care_taker in (
+				SELECT username FROM care_takers join prices on care_takers.username = prices.care_taker
+				WHERE care_takers.employee_type = 'full-time' and pet_type = $3 and avg_rating>=4
+				  )`,
+				[good_price, req.body.pet_type, req.body.pet_type], (error, results) =>	{
+				if (!error)	{
+					db.query(`UPDATE prices
+					SET price = $1
+					WHERE pet_type = $2 AND care_taker in (
+					SELECT username FROM care_takers join prices on care_takers.username = prices.care_taker
+					WHERE care_takers.employee_type = 'full-time' and pet_type = $3 and (avg_rating<4 or avg_rating IS NULL)
+					)`,
+					[req.body.new_price, req.body.pet_type, req.body.pet_type], (error, results) =>	{
+					if (!error)	{
+						res.send({status: 'success'});
+					}
+					else
+						res.send({status: 'failed'});
+					});
+				}
+				else
+					res.send({status: 'failed'});
+				});
 			}
 			else
 				res.send({status: 'failed'});
-	});
+			});
 		}
 		else
 			res.send({status: 'failed'});
@@ -195,6 +238,40 @@ app.post("/deleteBasePrice", isAuthenticatedMiddleware, (req, res) =>	{
 		else
 			res.send({status: 'failed'});
 	});
+});
+
+app.post("/toggleAccType", isAuthenticatedMiddleware, (req, res) =>	{
+    if(!req.user.isAdmin){
+        res.send({status: 'not admin'});
+        return;
+	}
+	let table = 'pcs_administrators';
+	if (req.body.type === 'owner')
+		table = 'pet_owners';
+	else if (req.body.type === 'care_taker')
+		table = 'care_takers';
+
+	if (req.body.insert)	{
+		db.query('INSERT INTO ' + table + ' (username) VALUES ($1)',
+		[req.body.username], (error, results) =>	{
+			if (!error)	{
+				res.send({status: 'success'});
+			}
+			else
+				res.send({status: 'failed'});
+		});
+	}
+	//Delete
+	else	{
+		db.query('DELETE FROM ' + table + ' WHERE username = $1',
+		[req.body.username], (error, results) =>	{
+			if (!error)	{
+				res.send({status: 'success'});
+			}
+			else
+				res.send({status: 'failed'});
+		});
+	}
 });
 
 server.listen(port, () =>

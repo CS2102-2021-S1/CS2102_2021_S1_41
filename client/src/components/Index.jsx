@@ -214,6 +214,7 @@ class Index extends Component {
 				}
 				if (data.status === "success") {
 					this.getBasePrices();
+					this.getOwnerPets();
 				} else {
 					alert("Failed to remove base_price");
 				}
@@ -340,7 +341,7 @@ class Index extends Component {
 										className="form-control"
 										autoFocus
 										type="text"
-										placeholder="BasePrice Pet Type"
+										placeholder="Pet Type"
 										value={this.state.new_base_price_pet_type}
 										onChange={(e) => this.setState({ new_base_price_pet_type: e.target.value })}
 									/>
@@ -348,8 +349,8 @@ class Index extends Component {
 								<div className="form-group">
 									<input
 										className="form-control"
-										type="text"
-										placeholder="BasePrice Price"
+										type="number"
+										placeholder="Base Price"
 										value={this.state.new_base_price_price}
 										onChange={(e) => this.setState({ new_base_price_price: e.target.value })}
 									/>
@@ -377,40 +378,44 @@ class Index extends Component {
 			<div>
 				<h2>Welcome {getDisplayName()}</h2>
 				<div className="row">
-					<div className="rounded col-4 dashboard-card m-2 pet-display">
-						<div className="flex-fixed">
-							<h5 className="d-inline-block">Your Pets</h5>
-							<button className="add-btn" onClick={() => this.setState({ showAddPet: true })}>
-								<FaPlus />
-							</button>
-						</div>
-						<div className="pet-box">
-							<div className="row pet-row-header">
-								<div className="col-6">
-									<b>Name</b>
-								</div>
-								<div className="col-5">
-									<b>Type</b>
-								</div>
-								<div className="col-1" />
+					<div className="rounded col-6">
+						<div className="dashboard-card pet-display">
+							<div className="flex-fixed">
+								<h5 className="d-inline-block">Your Pets</h5>
+								<button className="add-btn" onClick={() => this.setState({ showAddPet: true })}>
+									<FaPlus />
+								</button>
 							</div>
-							<div className="pet-box-scroll">
-								{this.state.pets.map((pet) => (
-									<div className="row pet-row">
-										<div className="col-6">{pet.pet_name}</div>
-										<div className="col-5">{pet.pet_type}</div>
-										<div className="col-1">
-											<button className="del-btn" onClick={(e) => this.deletePet(e, pet)}>
-												<FaTrash />
-											</button>
-										</div>
+							<div className="pet-box">
+								<div className="row pet-row-header">
+									<div className="col-6">
+										<b>Name</b>
 									</div>
-								))}
+									<div className="col-5">
+										<b>Type</b>
+									</div>
+									<div className="col-1" />
+								</div>
+								<div className="pet-box-scroll">
+									{this.state.pets.map((pet) => (
+										<div className="row pet-row">
+											<div className="col-6">{pet.pet_name}</div>
+											<div className="col-5">{pet.pet_type}</div>
+											<div className="col-1">
+												<button className="del-btn" onClick={(e) => this.deletePet(e, pet)}>
+													<FaTrash />
+												</button>
+											</div>
+										</div>
+									))}
+								</div>
 							</div>
 						</div>
 					</div>
-					<div className="rounded col-4 dashboard-card m-2">
-						<h5>Your Bids</h5>
+					<div className="rounded col-6">
+						<div className="dashboard-card">
+							<h5>Your Bids</h5>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -421,51 +426,66 @@ class Index extends Component {
 			<div className="admin-box">
 				<h2> Admin Dashboard{"\n"}</h2>
 				<div className="row">
-					<div className="rounded col-4 dashboard-card m-2 pet-display">
-						<div className="flex-fixed">
-							<h5 className="d-inline-block">Current Base Price List</h5>
-							<button className="add-btn" onClick={() => this.setState({ showAddBasePrice: true })}>
-								<FaPlus />
-							</button>
-						</div>
-						<div className="pet-box">
-							<div className="row pet-row-header">
-								<div className="col-6">
-									<b>Pet Type</b>
-								</div>
-								<div className="col-5">
-									<b>Price</b>
-								</div>
-								<div className="col-1" />
+					<div className="rounded col-6">
+						<div className="dashboard-card pet-display">
+							<div className="flex-fixed">
+								<h5 className="d-inline-block">Current Base Price List</h5>
+								<button className="add-btn" onClick={() => this.setState({ showAddBasePrice: true })}>
+									<FaPlus />
+								</button>
 							</div>
-							<div className="pet-box-scroll">
-								{this.state.base_prices.map((base_price) => (
-									<div className="row pet-row">
-										<div className="col-6">{base_price.pet_type}</div>
-										<div className="col-4">{base_price.price}</div>
-										<div className="col-1">
-											<button
-												className="del-btn"
-												onClick={(e) => this.showEditBasePrice(e, base_price)}
-											>
-												<FaEdit />
-											</button>
-										</div>
-										<div className="col-1">
-											<button
-												className="del-btn"
-												onClick={(e) => this.deleteBasePrice(e, base_price)}
-											>
-												<FaTrash />
-											</button>
-										</div>
+							<div className="pet-box">
+								<div className="row pet-row-header">
+									<div className="col-6">
+										<b>Pet Type</b>
 									</div>
-								))}
+									<div className="col-5">
+										<b>Price</b>
+									</div>
+									<div className="col-1" />
+								</div>
+								<div className="pet-box-scroll">
+									{this.state.base_prices.map((base_price) => (
+										<div className="row pet-row">
+											<div className="col-6">{base_price.pet_type}</div>
+											<div className="col-4">{base_price.price}</div>
+											<div className="col-1">
+												<button
+													className="del-btn"
+													onClick={(e) => this.showEditBasePrice(e, base_price)}
+												>
+													<FaEdit />
+												</button>
+											</div>
+											<div className="col-1">
+												<button
+													className="del-btn"
+													onClick={(e) => this.deleteBasePrice(e, base_price)}
+												>
+													<FaTrash />
+												</button>
+											</div>
+										</div>
+									))}
+								</div>
 							</div>
 						</div>
 					</div>
-					<div className="rounded col-8 dashboard-card m-2">
-						<h5>Bids</h5>
+					<div className="rounded col-6">
+						<div className="dashboard-card pet-display">
+							<div className="flex-fixed">
+								<h5 className="d-inline-block">Admin Controls</h5>
+							</div>
+							<div className="pet-box admin-controls">
+								<a href="/users">All Users</a>
+								<a href="#">Something Else</a>
+							</div>
+						</div>
+					</div>
+					<div className="rounded col-12 mt-3">
+						<div className="dashboard-card">
+							<h5>Bids</h5>
+						</div>
 					</div>
 				</div>
 			</div>

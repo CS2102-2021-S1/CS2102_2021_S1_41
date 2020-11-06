@@ -545,5 +545,13 @@ thead tr td {
 }
 
 .admin-box {
-    margin-top: 20px;
+	margin-top: 20px;
+}
+
+.admin-controls {
+	text-align: center;
+}
+
+.admin-controls > a {
+	padding-top: 10px;
 }
