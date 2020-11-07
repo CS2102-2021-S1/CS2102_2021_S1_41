@@ -10,7 +10,8 @@ AY20/21 Sem1 CS2102 Database Systems Group Project (Team 41)
 ### [Website Link](https://petcare.places.sg)
 Deployed on private server
 
+### [Project Report](docs/Report.pdf)
+
 ### ER Diagram Model: Pet Caring Service (PCS) Application
 ![ER Diagram](docs/images/ER_Diagram_Project.jpg)
 
-### [Project Report](docs/Report.pdf)
