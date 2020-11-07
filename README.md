@@ -1,5 +1,3 @@
-[![Heroku App Status](http://heroku-shields.herokuapp.com/cs2102-2021-s1-41)](https://cs2102-2021-s1-41.herokuapp.com)
-
 # CS2102_2021_S1_41
 AY20/21 Sem1 CS2102 Database Systems Group Project (Team 41)
 * Ko Gi Hun (@nordic96)
@@ -7,7 +5,11 @@ AY20/21 Sem1 CS2102 Database Systems Group Project (Team 41)
 * Chan Wei Qiang Jason (@jasonchanwq)
 * Putra Mohammad Danish Bin Mohd Rafee (@iamputradanish)
 * Chew Zhao En (@chewzhaoen) 
-## W6 Project Deliverables
+
+## Website Deployment
+### [petcare.places.sg](https://petcare.places.sg)
+
+## Project Deliverables
 ### 1. ER Diagram Model: Pet Caring Service (PCS) Application
 ![ER Diagram](docs/images/ER_Diagram_Project.jpg)
 
