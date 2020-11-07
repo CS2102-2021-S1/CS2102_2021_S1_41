@@ -6,6 +6,7 @@ const yargs = require('yargs');
 const { Client } = require('pg');
 const crypto = require('crypto');
 const path = require('path');
+const { start } = require('repl');
 const auth = require(path.resolve(__dirname, "./auth.js"));
 const db = new Client({
 	user: 'postgres',
@@ -683,6 +684,158 @@ app.get("/getMonthSalary", isAuthenticatedMiddleware, async (req, res) =>	{
 			return;
 		}
 	}
+});
+
+app.get("/getLeaves", isAuthenticatedMiddleware, (req, res) =>	{
+	if(!req.user.isCareTaker) {
+        res.send({status: 'not caretaker'});
+        return;
+    }
+	db.query('SELECT start_date, end_date FROM leaves WHERE care_taker = $1', [req.user.username], (err, dbres) => {
+		if (err) {
+		  	console.log(err.stack);
+		} else {
+			res.send(dbres.rows);
+		}
+	});
+});
+
+app.post("/addLeave", isAuthenticatedMiddleware, async (req, res) =>	{
+    if(!req.user.isCareTaker){
+        res.send({status: 'not caretaker'});
+        return;
+	}
+	if (new Date(req.body.start_date) - new Date(req.body.end_date) > 0)	{
+		res.send({error: 'Wrong date order'});
+        return;
+	}
+	const today = new Date(new Date().toISOString().slice(0, 10));
+	if (new Date(req.body.start_date) - today < 0)	{
+		res.send({error: 'Cannot apply for leave before today'});
+        return;
+	}
+
+	//check if leave clashes with any confirmed bids
+	let bid_dates = [];
+	try	{
+		const result = await db.query('SELECT start_date, end_date FROM bids WHERE care_taker = $1 AND SELECTED = true', [req.user.username]);
+		bid_dates = result.rows;
+	} catch (err) {
+		console.log(err);
+		res.send({error: 'failed'});
+		return;
+	}
+
+	let working_dates = {};
+
+	for (let i = 0; i < bid_dates.length; i++)	{
+		const start_date = new Date(bid_dates[i].start_date);
+		const end_date = new Date(bid_dates[i].end_date);
+
+		for (let date = new Date(start_date.getTime()); date <= end_date; date.setDate(date.getDate() + 1))	{
+			if (date in working_dates) {}
+			else
+				working_dates[date] = 1;
+		}
+	}
+	
+	let leave_dates = {};
+	let start_date = new Date(req.body.start_date);
+	let end_date = new Date(req.body.end_date);
+	start_date.setHours(0,0,0,0);
+	end_date.setHours(0,0,0,0);
+
+	for (let date = new Date(start_date.getTime()); date <= end_date; date.setDate(date.getDate() + 1))	{
+		if (date in leave_dates) {}
+		else
+			leave_dates[date] = 1;
+	}
+	
+	leave_dates = Object.keys(leave_dates);
+	for (let i = 0; i < leave_dates.length; i++)	{
+		//Clash, reject leave application
+		if (leave_dates[i] in working_dates)	{
+			res.send({error:"Leave clashes with working dates"});
+			return;
+		}
+	}
+
+	db.query('INSERT INTO leaves (care_taker, start_date, end_date) VALUES ($1, $2, $3)',
+	[req.user.username, new Date(req.body.start_date), new Date(req.body.end_date)], (error, results) =>	{
+		if (!error)	{
+			res.send({status: 'success'});
+		}
+		else
+			res.send({status: 'failed'});
+	});
+});
+
+app.post("/deleteLeave", isAuthenticatedMiddleware, (req, res) =>	{
+    if(!req.user.isCareTaker){
+        res.send({status: 'not caretaker'});
+        return;
+	}
+	db.query('DELETE FROM leaves WHERE care_taker = $1 AND start_date = $2 AND end_date = $3',
+	[req.user.username, req.body.start_date, req.body.end_date], (error, results) =>	{
+		if (!error)	{
+			res.send({status: 'success'});
+		}
+		else
+			res.send({status: 'failed'});
+	});
+});
+
+app.get("/getAvailabilities", isAuthenticatedMiddleware, (req, res) =>	{
+	if(!req.user.isCareTaker) {
+        res.send({status: 'not caretaker'});
+        return;
+    }
+	db.query('SELECT start_date, end_date FROM availabilities WHERE care_taker = $1', [req.user.username], (err, dbres) => {
+		if (err) {
+		  	console.log(err.stack);
+		} else {
+			res.send(dbres.rows);
+		}
+	});
+});
+
+app.post("/addAvailability", isAuthenticatedMiddleware, (req, res) =>	{
+    if(!req.user.isCareTaker){
+        res.send({status: 'not caretaker'});
+        return;
+	}
+	if (new Date(req.body.start_date) - new Date(req.body.end_date) > 0)	{
+		res.send({error: 'Wrong date order'});
+        return;
+	}
+	const today = new Date(new Date().toISOString().slice(0, 10));
+	if (new Date(req.body.start_date) - today < 0)	{
+		res.send({error: 'Cannot add date before today'});
+        return;
+	}
+	db.query('INSERT INTO availabilities (care_taker, start_date, end_date) VALUES ($1, $2, $3)',
+	[req.user.username, new Date(req.body.start_date), new Date(req.body.end_date)], (error, results) =>	{
+		if (!error)	{
+			res.send({status: 'success'});
+		}
+		else
+			res.send({status: 'failed'});
+	});
+});
+
+app.post("/deleteAvailability", isAuthenticatedMiddleware, (req, res) =>	{
+    if(!req.user.isCareTaker){
+        res.send({status: 'not caretaker'});
+        return;
+	}
+	db.query('DELETE FROM availabilities WHERE care_taker = $1 AND start_date = $2 AND end_date = $3',
+	[req.user.username, req.body.start_date, req.body.end_date], (error, results) =>	{
+		if (!error)	{
+			res.send({status: 'success'});
+		}
+		else
+			res.send({status: 'failed'});
+	});
 });
 
 server.listen(port, () =>

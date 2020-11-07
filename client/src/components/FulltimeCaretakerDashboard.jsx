@@ -18,6 +18,11 @@ class FulltimeCaretakerDashboard extends Component {
 			editting_error: "",
 			bids: [],
 			salary: "-",
+			leaves: [],
+			showAddLeave: false,
+			leave_start_date: "",
+			leave_end_date: "",
+			leave_error: "",
 		};
 	}
 	formatDate(date) {
@@ -79,6 +84,45 @@ class FulltimeCaretakerDashboard extends Component {
 				}
 			});
 	};
+	addLeave = (e) => {
+		e.preventDefault();
+		if (this.state.leave_start_date.length === 0 || this.state.leave_end_date.length === 0) {
+			this.setState({ leave_error: "Provide both dates" });
+			return;
+		} else {
+			this.setState({ leave_error: "" });
+		}
+		fetch(window.location.protocol + "//" + window.location.host + "/addLeave", {
+			method: "POST",
+			headers: { "Content-Type": "application/json", "Access-Token": getAccessToken() },
+			body: JSON.stringify({
+				start_date: this.state.leave_start_date,
+				end_date: this.state.leave_end_date,
+			}),
+		})
+			.then((response) => response.json())
+			.then((data) => {
+				if (data.error === "Not Authenticated") {
+					logOut();
+					window.location.href = "/";
+				} else if (data.error) {
+					this.setState({
+						leave_error: data.error,
+					});
+				} else if (data.status === "success") {
+					alert("Added new leave");
+					this.setState({
+						leave_start_date: "",
+						leave_end_date: "",
+						leave_error: "",
+						showAddLeave: false,
+					});
+					this.getLeaves();
+				} else {
+					this.setState({ leave_error: "Invalid input" });
+				}
+			});
+	};
 	renderAddPrice() {
 		return (
 			<div className="modal" role="dialog">
@@ -125,6 +169,64 @@ class FulltimeCaretakerDashboard extends Component {
 			</div>
 		);
 	}
+	renderAddLeave() {
+		return (
+			<div className="modal" role="dialog">
+				<div className="modal-dialog" role="document">
+					<div className="modal-content">
+						<form onSubmit={this.addLeave}>
+							<div className="modal-header">
+								<h5 className="modal-title">Apply New Leave</h5>
+								<button
+									type="button"
+									className="close"
+									aria-label="Close"
+									onClick={() => this.setState({ showAddLeave: false })}
+								>
+									<span aria-hidden="true">&times;</span>
+								</button>
+							</div>
+							<div className="modal-body">
+								<div className="form-group">
+									<h5>Start Date</h5>
+									<input
+										className="form-control"
+										autoFocus
+										type="date"
+										placeholder=""
+										value={this.state.leave_start_date}
+										onChange={(e) => this.setState({ leave_start_date: e.target.value })}
+									/>
+								</div>
+								<div className="form-group">
+									<h5>End Date</h5>
+									<input
+										className="form-control"
+										autoFocus
+										type="date"
+										placeholder=""
+										value={this.state.leave_end_date}
+										onChange={(e) => this.setState({ leave_end_date: e.target.value })}
+									/>
+								</div>
+								<div className="error">{this.state.leave_error}</div>
+							</div>
+							<div className="modal-footer">
+								<input className="btn btn-primary" type="submit" value="Submit" />
+								<button
+									type="button"
+									className="btn btn-secondary"
+									onClick={() => this.setState({ showAddLeave: false })}
+								>
+									Cancel
+								</button>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		);
+	}
 	getCaretakerBids = () => {
 		this.setState({ bids: [] });
 		if (isLoggedIn()) {
@@ -148,6 +250,7 @@ class FulltimeCaretakerDashboard extends Component {
 		this.getFullTimePriceList();
 		this.getCaretakerBids();
 		this.getMonthSalary();
+		this.getLeaves();
 	}
 	getFullTimePriceList() {
 		if (isLoggedIn()) {
@@ -163,6 +266,24 @@ class FulltimeCaretakerDashboard extends Component {
 					}
 					if (Array.isArray(data)) {
 						this.setState({ pricelist: data });
+					}
+				});
+		}
+	}
+	getLeaves() {
+		if (isLoggedIn()) {
+			fetch(window.location.protocol + "//" + window.location.host + "/getLeaves", {
+				method: "GET",
+				headers: { "Content-Type": "application/json", "Access-Token": getAccessToken() },
+			})
+				.then((response) => response.json())
+				.then((data) => {
+					if (data.error === "Not Authenticated") {
+						logOut();
+						window.location.href = "/";
+					}
+					if (Array.isArray(data)) {
+						this.setState({ leaves: data });
 					}
 				});
 		}
@@ -206,10 +327,35 @@ class FulltimeCaretakerDashboard extends Component {
 				}
 			});
 	}
+	deleteLeave(e, leave) {
+		e.preventDefault();
+		if (!window.confirm("Delete leave?")) return;
+		fetch(window.location.protocol + "//" + window.location.host + "/deleteLeave", {
+			method: "POST",
+			headers: { "Content-Type": "application/json", "Access-Token": getAccessToken() },
+			body: JSON.stringify({
+				start_date: this.formatYear(leave.start_date),
+				end_date: this.formatYear(leave.end_date),
+			}),
+		})
+			.then((response) => response.json())
+			.then((data) => {
+				if (data.error === "Not Authenticated") {
+					logOut();
+					window.location.href = "/login";
+				}
+				if (data.status === "success") {
+					window.location.href = "/";
+				} else {
+					alert("Failed to remove leave");
+				}
+			});
+	}
 	render() {
 		return (
 			<div className="mt-4">
 				{this.state.showAddPrice ? this.renderAddPrice() : null}
+				{this.state.showAddLeave ? this.renderAddLeave() : null}
 				<h2>Full-time Caretaker Dashboard</h2>
 				<div className="row">
 					<div className="rounded col-6">
@@ -247,11 +393,42 @@ class FulltimeCaretakerDashboard extends Component {
 						</div>
 					</div>
 					<div className="rounded col-6">
-						<div className="dashboard-card">
-							<h5>
-								<b>Your Salary (this month): ${this.state.salary}</b>
-							</h5>
-							<h5>Your Leaves</h5>
+						<div className="dashboard-card pet-display">
+							<div className="flex-fixed">
+								<h5>
+									<b>Your Salary (this month): ${this.state.salary}</b>
+								</h5>
+							</div>
+							<div className="flex-fixed">
+								<h5 className="d-inline-block">Your Leaves</h5>
+								<button className="add-btn" onClick={() => this.setState({ showAddLeave: true })}>
+									<FaPlus />
+								</button>
+							</div>
+							<div className="pet-box">
+								<div className="row pet-row-header">
+									<div className="col-6">
+										<b>Start Date</b>
+									</div>
+									<div className="col-5">
+										<b>End Date</b>
+									</div>
+									<div className="col-1" />
+								</div>
+								<div className="pet-box-scroll">
+									{this.state.leaves.map((leave) => (
+										<div className="row pet-row" key={leave.start_date + leave.end_date}>
+											<div className="col-6">{this.formatDate(leave.start_date)}</div>
+											<div className="col-4">{this.formatDate(leave.end_date)}</div>
+											<div className="col-2">
+												<button className="del-btn" onClick={(e) => this.deleteLeave(e, leave)}>
+													<FaTrash />
+												</button>
+											</div>
+										</div>
+									))}
+								</div>
+							</div>
 						</div>
 					</div>
 				</div>

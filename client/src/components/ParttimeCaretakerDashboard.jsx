@@ -19,6 +19,11 @@ class ParttimeCaretakerDashboard extends Component {
 			editting_error: "",
 			bids: [],
 			salary: "-",
+			availabilities: [],
+			showAddAvailability: false,
+			availability_start_date: "",
+			availability_end_date: "",
+			availability_error: "",
 		};
 	}
 	addNewPrice = (e) => {
@@ -60,6 +65,45 @@ class ParttimeCaretakerDashboard extends Component {
 					this.getPartTimePriceList();
 				} else {
 					this.setState({ new_price_error: "Invalid input" });
+				}
+			});
+	};
+	addAvailability = (e) => {
+		e.preventDefault();
+		if (this.state.availability_start_date.length === 0 || this.state.availability_end_date.length === 0) {
+			this.setState({ leave_error: "Provide both dates" });
+			return;
+		} else {
+			this.setState({ leave_error: "" });
+		}
+		fetch(window.location.protocol + "//" + window.location.host + "/addAvailability", {
+			method: "POST",
+			headers: { "Content-Type": "application/json", "Access-Token": getAccessToken() },
+			body: JSON.stringify({
+				start_date: this.state.availability_start_date,
+				end_date: this.state.availability_end_date,
+			}),
+		})
+			.then((response) => response.json())
+			.then((data) => {
+				if (data.error === "Not Authenticated") {
+					logOut();
+					window.location.href = "/";
+				} else if (data.error) {
+					this.setState({
+						availability_error: data.error,
+					});
+				} else if (data.status === "success") {
+					alert("Added new availability");
+					this.setState({
+						availability_start_date: "",
+						availability_end_date: "",
+						availability_error: "",
+						showAddAvailability: false,
+					});
+					this.getAvailabilities();
+				} else {
+					this.setState({ availability_error: "Invalid input" });
 				}
 			});
 	};
@@ -156,10 +200,68 @@ class ParttimeCaretakerDashboard extends Component {
 			</div>
 		);
 	}
+	renderAddAvailability() {
+		return (
+			<div className="modal" role="dialog">
+				<div className="modal-dialog" role="document">
+					<div className="modal-content">
+						<form onSubmit={this.addAvailability}>
+							<div className="modal-header">
+								<h5 className="modal-title">Add Availability</h5>
+								<button
+									type="button"
+									className="close"
+									aria-label="Close"
+									onClick={() => this.setState({ showAddAvailability: false })}
+								>
+									<span aria-hidden="true">&times;</span>
+								</button>
+							</div>
+							<div className="modal-body">
+								<div className="form-group">
+									<h5>Start Date</h5>
+									<input
+										className="form-control"
+										autoFocus
+										type="date"
+										placeholder=""
+										value={this.state.availability_start_date}
+										onChange={(e) => this.setState({ availability_start_date: e.target.value })}
+									/>
+								</div>
+								<div className="form-group">
+									<h5>End Date</h5>
+									<input
+										className="form-control"
+										type="date"
+										placeholder=""
+										value={this.state.availability_end_date}
+										onChange={(e) => this.setState({ availability_end_date: e.target.value })}
+									/>
+								</div>
+								<div className="error">{this.state.availability_error}</div>
+							</div>
+							<div className="modal-footer">
+								<input className="btn btn-primary" type="submit" value="Submit" />
+								<button
+									type="button"
+									className="btn btn-secondary"
+									onClick={() => this.setState({ showAddAvailability: false })}
+								>
+									Cancel
+								</button>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		);
+	}
 	componentDidMount() {
 		this.getPartTimePriceList();
 		this.getCaretakerBids();
 		this.getMonthSalary();
+		this.getAvailabilities();
 	}
 	getPartTimePriceList() {
 		if (isLoggedIn()) {
@@ -198,6 +300,25 @@ class ParttimeCaretakerDashboard extends Component {
 				});
 		}
 	};
+	getAvailabilities() {
+		this.setState({ availabilities: [] });
+		if (isLoggedIn()) {
+			fetch(window.location.protocol + "//" + window.location.host + "/getAvailabilities", {
+				method: "GET",
+				headers: { "Content-Type": "application/json", "Access-Token": getAccessToken() },
+			})
+				.then((response) => response.json())
+				.then((data) => {
+					if (data.error === "Not Authenticated") {
+						logOut();
+						window.location.href = "/";
+					}
+					if (Array.isArray(data)) {
+						this.setState({ availabilities: data });
+					}
+				});
+		}
+	}
 	showEditPrice(e, price) {
 		e.preventDefault();
 		this.setState({
@@ -252,6 +373,30 @@ class ParttimeCaretakerDashboard extends Component {
 					window.location.href = "/";
 				} else {
 					alert("Failed to remove price");
+				}
+			});
+	}
+	deleteAvailability(e, availability) {
+		e.preventDefault();
+		if (!window.confirm("Delete availability?")) return;
+		fetch(window.location.protocol + "//" + window.location.host + "/deleteAvailability", {
+			method: "POST",
+			headers: { "Content-Type": "application/json", "Access-Token": getAccessToken() },
+			body: JSON.stringify({
+				start_date: this.formatYear(availability.start_date),
+				end_date: this.formatYear(availability.end_date),
+			}),
+		})
+			.then((response) => response.json())
+			.then((data) => {
+				if (data.error === "Not Authenticated") {
+					logOut();
+					window.location.href = "/login";
+				}
+				if (data.status === "success") {
+					window.location.href = "/";
+				} else {
+					alert("Failed to remove availability");
 				}
 			});
 	}
@@ -340,6 +485,7 @@ class ParttimeCaretakerDashboard extends Component {
 			<div className="mt-4">
 				{this.state.showAddPrice ? this.renderAddPrice() : null}
 				{this.state.showEditPrice ? this.renderEditPrice() : null}
+				{this.state.showAddAvailability ? this.renderAddAvailability() : null}
 				<h2>Part-time Caretaker Dashboard</h2>
 				<div className="row">
 					<div className="rounded col-6">
@@ -385,11 +531,51 @@ class ParttimeCaretakerDashboard extends Component {
 						</div>
 					</div>
 					<div className="rounded col-6">
-						<div className="dashboard-card">
-							<h5>
-								<b>Your Salary (this month): ${this.state.salary}</b>
-							</h5>
-							<h5>Your Availabilities</h5>
+						<div className="dashboard-card pet-display">
+							<div className="flex-fixed">
+								<h5>
+									<b>Your Salary (this month): ${this.state.salary}</b>
+								</h5>
+							</div>
+							<div className="flex-fixed">
+								<h5 className="d-inline-block">Your Availabilities</h5>
+								<button
+									className="add-btn"
+									onClick={() => this.setState({ showAddAvailability: true })}
+								>
+									<FaPlus />
+								</button>
+							</div>
+							<div className="pet-box">
+								<div className="row pet-row-header">
+									<div className="col-6">
+										<b>Start Date</b>
+									</div>
+									<div className="col-5">
+										<b>End Date</b>
+									</div>
+									<div className="col-1" />
+								</div>
+								<div className="pet-box-scroll">
+									{this.state.availabilities.map((availability) => (
+										<div
+											className="row pet-row"
+											key={availability.start_date + availability.end_date}
+										>
+											<div className="col-6">{this.formatDate(availability.start_date)}</div>
+											<div className="col-4">{this.formatDate(availability.end_date)}</div>
+											<div className="col-2">
+												<button
+													className="del-btn"
+													onClick={(e) => this.deleteAvailability(e, availability)}
+												>
+													<FaTrash />
+												</button>
+											</div>
+										</div>
+									))}
+								</div>
+							</div>
 						</div>
 					</div>
 				</div>
