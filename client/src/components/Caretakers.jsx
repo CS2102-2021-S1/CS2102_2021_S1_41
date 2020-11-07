@@ -103,9 +103,9 @@ class Caretakers extends Component {
 					<div className="row page">
 						<div className="col-12">
 							<div className="row wrapper flex-column flex-sm-row nav-size">
-								<div class="card-page mb-3">
-									<div class="card-header">Current Available Services</div>
-									<div class="class-body">
+								<div className="card-page mb-3">
+									<div className="card-header">Current Available Services</div>
+									<div className="class-body">
 										care taker available: <img src={available} alt="" /> care taker unavailable:{" "}
 										<img src={unavailable} alt="" />
 										<br />
@@ -115,7 +115,7 @@ class Caretakers extends Component {
                                                 <td><Dropdown options={this.state.areas} onChange={this.filterList} value='All' placeholder="Select an option" /></td>
                                             </tr>
                                         </table> */}
-										<div class="table-responsive">
+										<div className="table-responsive">
 											<Table striped bordered hover>
 												<thead>
 													<tr>
@@ -148,15 +148,15 @@ class Caretakers extends Component {
 										</div>
 									</div>
 								</div>
-								<div class="card-page mb-3">
-									<div class="card-header">Average Price based on Pet Type and Area</div>
-									<div class="class-body">
+								<div className="card-page mb-3">
+									<div className="card-header">Average Price based on Pet Type and Area</div>
+									<div className="class-body">
 										<p>
 											Average price based on offered price by care takers for each pet type and
 											available service area. <br />
 											Base price set by default by PetCare system.
 										</p>
-										<div class="table-responsive">
+										<div className="table-responsive">
 											<Table striped bordered hover>
 												<thead>
 													<tr>
