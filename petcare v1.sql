@@ -13,7 +13,7 @@ CREATE TABLE Users (
 	username		VARCHAR (50) NOT NULL,
 	display_name	   	VARCHAR (50) NOT NULL,
 	password_hash  	VARCHAR (64) NOT NULL,
-	salt			VARCHAR (16),
+	salt			VARCHAR (16) NOT NULL,
 	PRIMARY KEY (username)
 );
 
@@ -102,4 +102,11 @@ CREATE TABLE Leaves (
 	/*PRIMARY KEY (care_taker,start_date) end date pointless*/
 );
 
+CREATE TABLE Past_Salaries (
+	username		VARCHAR (50) NOT NULL,
+	year	   		NUMERIC NOT NULL,
+	month  			VARCHAR (50) NOT NULL,
+	salary			NUMERIC,
+	PRIMARY KEY (username, year, month)
+);
 
