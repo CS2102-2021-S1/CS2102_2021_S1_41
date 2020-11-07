@@ -6,8 +6,9 @@ AY20/21 Sem1 CS2102 Database Systems Group Project (Team 41)
 * Putra Mohammad Danish Bin Mohd Rafee (@iamputradanish)
 * Chew Zhao En (@chewzhaoen) 
 
-## Website Deployment
-### [petcare.places.sg](https://petcare.places.sg)
+## Deployment
+### [Website Link](https://petcare.places.sg)
+Deployed on private server
 
 ## Project Deliverables
 ### 1. ER Diagram Model: Pet Caring Service (PCS) Application
