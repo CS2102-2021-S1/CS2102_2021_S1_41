@@ -2,13 +2,12 @@ import React, { Component } from "react";
 import "css/styles.css";
 import icon from "img/icon.png";
 import { isLoggedIn, getDisplayName, logOut } from "./ClientAuth";
+import { FaSearch } from "react-icons/fa";
 
 class Navbar extends Component {
 	constructor(props) {
 		super(props);
-		this.state = {
-			example_state: "-",
-		};
+		this.state = {};
 	}
 	renderLogin() {
 		return (
@@ -42,6 +41,15 @@ class Navbar extends Component {
 			</ul>
 		);
 	}
+	renderSearch() {
+		return (
+			<li className="nav-item">
+				<a className="nav-link" href="/bidding">
+					<FaSearch /> Search for Caretaker
+				</a>
+			</li>
+		);
+	}
 	clickLogout() {
 		logOut();
 		window.location.href = "/";
@@ -53,6 +61,7 @@ class Navbar extends Component {
 					<img src={icon} width="25px" alt="" /> PetCare
 				</a>
 				<ul className="navbar-nav">
+					{isLoggedIn() ? this.renderSearch() : null}
 					<li className="nav-item">
 						<a className="nav-link" href="/caretakers">
 							Services and Pricing

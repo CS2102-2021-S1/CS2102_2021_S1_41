@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import "css/styles.css";
 import { FaPlus, FaTrash } from "react-icons/fa";
 import { getAccessToken, isLoggedIn, logOut } from "./ClientAuth";
+import { FaCheck, FaTimes } from "react-icons/fa";
 
 class FulltimeCaretakerDashboard extends Component {
 	constructor(props) {
@@ -15,7 +16,31 @@ class FulltimeCaretakerDashboard extends Component {
 			editting_pet_type: "",
 			editting_new_price: "",
 			editting_error: "",
+			bids: [],
+			salary: "-",
 		};
+	}
+	formatDate(date) {
+		let d = new Date(date),
+			month = "" + (d.getMonth() + 1),
+			day = "" + d.getDate(),
+			year = d.getFullYear();
+
+		if (month.length < 2) month = "0" + month;
+		if (day.length < 2) day = "0" + day;
+
+		return [day, month, year].join("-");
+	}
+	formatYear(date) {
+		let d = new Date(date),
+			month = "" + (d.getMonth() + 1),
+			day = "" + d.getDate(),
+			year = d.getFullYear();
+
+		if (month.length < 2) month = "0" + month;
+		if (day.length < 2) day = "0" + day;
+
+		return [year, month, day].join("-");
 	}
 	addNewPrice = (e) => {
 		e.preventDefault();
@@ -100,8 +125,29 @@ class FulltimeCaretakerDashboard extends Component {
 			</div>
 		);
 	}
+	getCaretakerBids = () => {
+		this.setState({ bids: [] });
+		if (isLoggedIn()) {
+			fetch(window.location.protocol + "//" + window.location.host + "/getCaretakerBids", {
+				method: "GET",
+				headers: { "Content-Type": "application/json", "Access-Token": getAccessToken() },
+			})
+				.then((response) => response.json())
+				.then((data) => {
+					if (data.error === "Not Authenticated") {
+						logOut();
+						window.location.href = "/";
+					}
+					if (Array.isArray(data)) {
+						this.setState({ bids: data });
+					}
+				});
+		}
+	};
 	componentDidMount() {
 		this.getFullTimePriceList();
+		this.getCaretakerBids();
+		this.getMonthSalary();
 	}
 	getFullTimePriceList() {
 		if (isLoggedIn()) {
@@ -118,6 +164,22 @@ class FulltimeCaretakerDashboard extends Component {
 					if (Array.isArray(data)) {
 						this.setState({ pricelist: data });
 					}
+				});
+		}
+	}
+	getMonthSalary() {
+		if (isLoggedIn()) {
+			fetch(window.location.protocol + "//" + window.location.host + "/getMonthSalary", {
+				method: "GET",
+				headers: { "Content-Type": "application/json", "Access-Token": getAccessToken() },
+			})
+				.then((response) => response.json())
+				.then((data) => {
+					if (data.error === "Not Authenticated") {
+						logOut();
+						window.location.href = "/";
+					}
+					this.setState({ salary: data.salary });
 				});
 		}
 	}
@@ -186,7 +248,57 @@ class FulltimeCaretakerDashboard extends Component {
 					</div>
 					<div className="rounded col-6">
 						<div className="dashboard-card">
+							<h5>
+								<b>Your Salary (this month): ${this.state.salary}</b>
+							</h5>
 							<h5>Your Leaves</h5>
+						</div>
+					</div>
+				</div>
+				<div className="row mt-3">
+					<div className="rounded col-12">
+						<div className="dashboard-card pet-display">
+							<div className="flex-fixed">
+								<h5 className="d-inline-block">Bids placed for you</h5>
+							</div>
+							<div className="pet-box">
+								<div className="row pet-row-header">
+									<div className="col-2">
+										<b>Owner</b>
+									</div>
+									<div className="col-2">
+										<b>Pet Name</b>
+									</div>
+									<div className="col-2">
+										<b>Start</b>
+									</div>
+									<div className="col-2">
+										<b>End</b>
+									</div>
+									<div className="col-2">
+										<b>Price</b>
+									</div>
+									<div className="col-1">
+										<b>Payment</b>
+									</div>
+									<div className="col-1" />
+								</div>
+								<div className="pet-box-scroll">
+									{this.state.bids.map((bid) => (
+										<div
+											className="row pet-row"
+											key={bid.pet_name + bid.pet_owner + bid.start_date + bid.end_date}
+										>
+											<div className="col-2">{bid.pet_owner}</div>
+											<div className="col-2">{bid.pet_name}</div>
+											<div className="col-2">{this.formatDate(bid.start_date)}</div>
+											<div className="col-2">{this.formatDate(bid.end_date)}</div>
+											<div className="col-2">{bid.daily_price}</div>
+											<div className="col-1">{bid.paid ? <FaCheck /> : <FaTimes />}</div>
+										</div>
+									))}
+								</div>
+							</div>
 						</div>
 					</div>
 				</div>

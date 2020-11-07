@@ -250,11 +250,6 @@ class AdminDashboard extends Component {
 							</div>
 						</div>
 					</div>
-					<div className="rounded col-12 mt-3">
-						<div className="dashboard-card">
-							<h5>Bids</h5>
-						</div>
-					</div>
 				</div>
 			</div>
 		);

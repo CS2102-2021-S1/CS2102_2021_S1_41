@@ -10,7 +10,7 @@ const auth = require(path.resolve(__dirname, "./auth.js"));
 const db = new Client({
 	user: 'postgres',
 	host: 'petcare.places.sg',
-	database: 'petcare',
+	database: 'petcarev2',
 	password: 'CS2102',
 	port: 5432,
 });
@@ -103,6 +103,26 @@ app.get("/getOwnerPets", isAuthenticatedMiddleware, (req, res) =>	{
 		  	console.log(err.stack)
 		} else {
 			//console.log(res.rows[0])
+			res.send(dbres.rows);
+		}
+	});
+});
+
+app.get("/getOwnerBids", isAuthenticatedMiddleware, (req, res) =>	{
+	db.query('SELECT * FROM bids WHERE pet_owner = $1', [req.user.username], (err, dbres) => {
+		if (err) {
+		  	console.log(err.stack)
+		} else {
+			res.send(dbres.rows);
+		}
+	});
+});
+
+app.get("/getCaretakerBids", isAuthenticatedMiddleware, (req, res) =>	{
+	db.query('SELECT * FROM bids WHERE care_taker = $1', [req.user.username], (err, dbres) => {
+		if (err) {
+		  	console.log(err.stack)
+		} else {
 			res.send(dbres.rows);
 		}
 	});
@@ -330,6 +350,7 @@ app.post("/addNewPrice", isAuthenticatedMiddleware, (req, res) =>	{
 						db.query('SELECT avg_rating FROM care_takers WHERE username = $1', [req.user.username], (err, result) => {
 							if (err) {
 								res.send({status: 'failed'});
+								console.log(req.user);
 							} else {
 								let avg_rating = parseFloat(result.rows[0].avg_rating);
 								if (avg_rating >= 4)
@@ -403,6 +424,265 @@ app.post("/deletePrice", isAuthenticatedMiddleware, (req, res) =>	{
 		else
 			res.send({status: 'failed'});
 	});
+});
+
+app.post("/searchCaretaker", isAuthenticatedMiddleware, (req, res) =>	{
+	db.query('SELECT care_taker, price FROM prices WHERE pet_type = $1 AND price >= $2 AND price <= $3', [req.body.pet_type, req.body.min_price, req.body.max_price], (err, dbres) => {
+		if (err) {
+		  	console.log(err.stack);
+		} else {
+			res.send(dbres.rows);
+		}
+	});
+});
+
+app.post("/bid", isAuthenticatedMiddleware, async (req, res) =>	{
+	let base_price = 0;
+	try	{
+		const res = await db.query('SELECT price FROM base_prices WHERE pet_type = $1', [req.body.pet_type]);
+		if (res.rows.length == 1)	{
+			base_price = parseFloat(res.rows[0].price);
+		}
+		else	{
+			res.send({error: 'failed'});
+			return;
+		}
+	} catch (err) {
+		console.log(err);
+		res.send({error: 'failed'});
+		return;
+	}
+
+	if (parseFloat(req.body.price) < base_price)	{
+		res.send({error: 'Minimum price is $' + base_price});
+		return;
+	}
+
+	//Reject if date if before today or end date before start date
+	const start_date = new Date(req.body.start_date);
+	const end_date = new Date(req.body.end_date);
+	const today = new Date(new Date().toISOString().slice(0, 10));
+
+	if (start_date < today)	{
+		res.send({error: 'Start date cannot be before today'});
+		return;
+	}
+
+	if (start_date > end_date)	{
+		res.send({error: 'Start date cannot be after end date'});
+		return;
+	}
+
+	let full_time = false;
+	try	{
+		const res = await db.query('SELECT * FROM care_takers WHERE username = $1 AND employee_type = $2', [req.body.care_taker, 'full-time']);
+		if (res.rows.length == 1)
+			full_time = true;
+	} catch (err) {
+		console.log(err);
+		res.send({error: 'failed'});
+		return;
+	}
+
+	if (full_time)	{
+		//Try to auto accept the bid
+		//Check if care_taker has > 5 on any day
+		let booked_dates = {};
+
+		try	{
+			const result = await db.query('SELECT start_date, end_date FROM bids WHERE care_taker = $1 AND selected = true', 
+			[req.body.care_taker]);
+			for (let i = 0; i < result.rows.length; i++)	{
+				for (let date = new Date(result.rows[i].start_date); date <= new Date(result.rows[i].end_date); date.setDate(date.getDate() + 1))	{
+					if (date in booked_dates)
+						booked_dates[date] += 1;
+					else
+						booked_dates[date] = 1;
+				}
+			}
+			start_date.setHours(0,0,0,0);
+			end_date.setHours(0,0,0,0);
+			for (let date = new Date(start_date.getTime()); date <= end_date; date.setDate(date.getDate() + 1))	{
+				if (date in booked_dates)
+					booked_dates[date] += 1;
+				else
+					booked_dates[date] = 1;
+			}
+			const dates = Object.keys(booked_dates);
+			let exceeded = false;
+			for (let i = 0; i < dates.length; i++)	{
+				if (booked_dates[dates[i]] >= 6)
+					exceeded = true;
+			}
+			if (exceeded)	{
+				res.send({error: 'Caretaker is overbooked for selected dates!'});
+				return;
+			}
+		} catch (err) {
+			console.log(err);
+			res.send({error: 'Something went wrong lol'});
+			return;
+		}
+	}
+	try	{
+		const result = await db.query('INSERT INTO bids (pet_owner, care_taker, pet_name, transfer_mode, start_date, end_date, daily_price, selected) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)', 
+		[req.user.username, req.body.care_taker, req.body.pet_name, req.body.transfer, start_date, end_date, req.body.price, full_time]);
+		res.send({status: 'success'});
+		return;
+	} catch (err) {
+		res.send({error: 'Invalid Bid. Have you already done the same bid?'});
+		return;
+	}
+});
+
+app.post("/payBid", isAuthenticatedMiddleware, async (req, res) =>	{
+	try	{
+		const result = await db.query('SELECT selected FROM bids WHERE pet_owner = $1 AND care_taker = $2 AND pet_name = $3 AND start_date = $4 AND end_date = $5', 
+		[req.user.username, req.body.care_taker, req.body.pet_name, req.body.start_date, req.body.end_date]);
+		if (result.rows.length == 1)	{
+			if (!result.rows[0].selected)	{
+				res.send({error: 'Please wait for Care Taker to confirm before paying'});
+				return;
+			}
+		}
+		else	{
+			res.send({error: 'failed'});
+			return;
+		}
+	} catch (err) {
+		console.log(err);
+		res.send({error: 'failed'});
+		return;
+	}
+
+	db.query('UPDATE bids SET paid = true WHERE pet_owner = $1 AND care_taker = $2 AND pet_name = $3 AND start_date = $4 AND end_date = $5', 
+	[req.user.username, req.body.care_taker, req.body.pet_name, req.body.start_date, req.body.end_date], (err, dbres) => {
+		if (err) {
+			  console.log(err.stack);
+			  res.send({status: "fail"});
+		} else {
+			res.send({status: "success"});
+		}
+	});
+});
+
+app.post("/confirmBid", isAuthenticatedMiddleware, (req, res) =>	{
+	db.query('UPDATE bids SET selected = true WHERE pet_owner = $1 AND care_taker = $2 AND pet_name = $3 AND start_date = $4 AND end_date = $5', 
+	[req.body.pet_owner, req.user.username, req.body.pet_name, req.body.start_date, req.body.end_date], (err, dbres) => {
+		if (err) {
+			  console.log(err.stack);
+			  res.send({status: "fail"});
+		} else {
+			res.send({status: "success"});
+		}
+	});
+});
+
+app.post("/submitRating", isAuthenticatedMiddleware, (req, res) =>	{
+	db.query('UPDATE bids SET rating = $1, review = $2 WHERE pet_owner = $3 AND care_taker = $4 AND pet_name = $5 AND start_date = $6 AND end_date = $7', 
+	[req.body.rating, req.body.review, req.user.username, req.body.care_taker, req.body.pet_name, req.body.start_date, req.body.end_date], (err, dbres) => {
+		if (err) {
+			  console.log(err.stack);
+			  res.send({status: "fail"});
+		} else {
+			db.query(`WITH rating_CTE (care_taker, ave)
+			AS (
+			SELECT care_taker, ROUND (AVG(rating),2) as ave
+			FROM (
+			SELECT care_taker, rating from bids where rating is not NULL
+			)T1
+			GROUP BY care_taker
+			HAVING care_taker = $1
+			)
+			
+			UPDATE care_takers
+			SET avg_rating = (select ave from rating_CTE)
+			WHERE username = (select care_taker from rating_CTE)`, 
+			[req.body.care_taker], (err, dbres) => {
+				if (err) {
+					console.log(err.stack);
+					res.send({status: "fail"});
+				} else {
+					res.send({status: "success"});
+				}
+			});
+		}
+	});
+});
+
+app.get("/getMonthSalary", isAuthenticatedMiddleware, async (req, res) =>	{
+	const today = new Date(new Date().toISOString().slice(0, 10));
+
+	let full_time = false;
+	try	{
+		const result = await db.query('SELECT * FROM care_takers WHERE username = $1 AND employee_type = $2', [req.user.username, 'full-time']);
+		if (result.rows.length == 1)
+			full_time = true;
+	} catch (err) {
+		console.log(err);
+		res.send({error: 'failed'});
+		return;
+	}
+
+	if (full_time)	{
+		//Generates a list of {price} in this month for all confirmed and paid jobs
+		let pet_days_prices = [];
+
+		try	{
+			const result = await db.query('SELECT start_date, end_date, daily_price FROM bids WHERE care_taker = $1 AND selected = true AND paid = true ORDER BY start_date', 
+			[req.user.username]);
+			for (let i = 0; i < result.rows.length; i++)	{
+				for (let date = new Date(result.rows[i].start_date); date <= new Date(result.rows[i].end_date); date.setDate(date.getDate() + 1))	{
+					if (date.getMonth() === today.getMonth() && date.getFullYear() === today.getFullYear())	{
+						pet_days_prices.push(result.rows[i].daily_price);
+					}
+				}
+			}
+			if (pet_days_prices.length <= 60)	{
+				res.send({ salary: 3000 });
+				return;
+			}
+			else	{
+				let salary = 3000;
+				for (let i = 60; i < pet_days_prices.length; i++)	{
+					salary += pet_days_prices[i] * 0.8;
+				}
+				res.send({ salary });
+				return;
+			}
+		} catch (err) {
+			console.log(err);
+			res.send({error: 'Something went wrong lol'});
+			return;
+		}
+	}
+	//part time
+	else	{
+		//Generates a list of {price} in this month for all confirmed and paid jobs
+		let pet_days_prices = [];
+
+		try	{
+			const result = await db.query('SELECT start_date, end_date, daily_price FROM bids WHERE care_taker = $1 AND selected = true AND paid = true ORDER BY start_date', 
+			[req.user.username]);
+			for (let i = 0; i < result.rows.length; i++)	{
+				for (let date = new Date(result.rows[i].start_date); date <= new Date(result.rows[i].end_date); date.setDate(date.getDate() + 1))	{
+					if (date.getMonth() === today.getMonth() && date.getFullYear() === today.getFullYear())	{
+						pet_days_prices.push(result.rows[i].daily_price);
+					}
+				}
+			}
+			let salary = 0;
+			for (let i = 0; i < pet_days_prices.length; i++)	{
+				salary += pet_days_prices[i] * 0.75;
+			}
+			res.send({ salary });
+			return;
+		} catch (err) {
+			console.log(err);
+			res.send({error: 'Something went wrong lol'});
+			return;
+		}
+	}
 });
 
 server.listen(port, () =>

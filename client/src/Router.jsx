@@ -5,6 +5,7 @@ import Login from "./components/Login";
 import Register from "./components/Register";
 import Caretakers from "./components/Caretakers";
 import Users from "./components/Users";
+import Bidding from "./components/Bidding";
 
 const Router = () => {
 	return (
@@ -21,6 +22,9 @@ const Router = () => {
 				</Route>
 				<Route path="/users">
 					<Users />
+				</Route>
+				<Route path="/bidding">
+					<Bidding />
 				</Route>
 				<Route path="/">
 					<Index />
