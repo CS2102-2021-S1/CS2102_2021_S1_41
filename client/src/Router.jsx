@@ -6,6 +6,7 @@ import Register from "./components/Register";
 import Caretakers from "./components/Caretakers";
 import Users from "./components/Users";
 import Bidding from "./components/Bidding";
+import Caretaker from "./components/Caretaker";
 
 const Router = () => {
 	return (
@@ -25,6 +26,9 @@ const Router = () => {
 				</Route>
 				<Route path="/bidding">
 					<Bidding />
+				</Route>
+				<Route path="/caretaker">
+					<Caretaker />
 				</Route>
 				<Route path="/">
 					<Index />

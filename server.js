@@ -850,6 +850,26 @@ app.post(subdir + "/deleteAvailability", isAuthenticatedMiddleware, (req, res) =
 	});
 });
 
+app.post(subdir + "/getUserRating", (req, res) =>	{
+	db.query('SELECT avg_rating FROM care_takers WHERE username = $1', [req.body.username], (err, dbres) => {
+		if (err) {
+		  	console.log(err.stack);
+		} else {
+			res.send({rating: dbres.rows[0].avg_rating});
+		}
+	});
+});
+
+app.post(subdir + "/getUserReviews", (req, res) =>	{
+	db.query('SELECT pet_owner, rating, review FROM bids WHERE care_taker = $1 AND rating IS NOT NULL', [req.body.username], (err, dbres) => {
+		if (err) {
+		  	console.log(err.stack);
+		} else {
+			res.send(dbres.rows);
+		}
+	});
+});
+
 server.listen(port, () =>
 	console.log(`Backend server started on port ${port}`)
 );

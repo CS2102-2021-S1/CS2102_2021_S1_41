@@ -122,6 +122,10 @@ class Bidding extends Component {
 	showBid = (caretaker) => {
 		this.setState({ step: 2, chosen_caretaker: caretaker });
 	};
+	goToCaretaker = (caretaker) => {
+		localStorage.setItem("cusername", caretaker.care_taker);
+		window.location.href = "/Caretaker";
+	};
 	renderSearch() {
 		return (
 			<form onSubmit={this.search}>
@@ -179,7 +183,11 @@ class Bidding extends Component {
 					<tbody>
 						{this.state.results.map((caretaker) => (
 							<tr key={caretaker.care_taker}>
-								<td>{caretaker.care_taker}</td>
+								<td>
+									<a href="#" onClick={() => this.goToCaretaker(caretaker)}>
+										{caretaker.care_taker}
+									</a>
+								</td>
 								<td>{caretaker.price}</td>
 								<td>
 									<button className="btn btn-primary" onClick={() => this.showBid(caretaker)}>
