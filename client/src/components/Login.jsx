@@ -49,7 +49,8 @@ class Login extends Component {
 						data.accessToken,
 						data.isPetOwner,
 						data.isCareTaker,
-						data.isAdmin
+						data.isAdmin,
+						data.isPartTime
 					);
 					window.location.href = "/";
 				} else {

@@ -71,6 +71,7 @@ const auth = (db) =>	{
 						const accessToken = encodeToken({ username: username });
 						let isPetOwner = false;
 						let isCareTaker = false;
+						let isPartTime = false;
 						let isAdmin = false;
 
 						try	{
@@ -89,6 +90,16 @@ const auth = (db) =>	{
 							console.log(err);
 						}
 
+						if (isCareTaker)	{
+							try	{
+								const res = await db.query('SELECT employee_type FROM care_takers WHERE username = $1', [username]);
+								if (res.rows[0].employee_type == 'part-time')
+									isPartTime = true;
+							} catch (err) {
+								console.log(err);
+							}
+						}
+
 						try	{
 							const res = await db.query('SELECT * FROM pcs_administrators WHERE username = $1', [username]);
 							if (res.rows.length == 1)
@@ -97,7 +108,7 @@ const auth = (db) =>	{
 							console.log(err);
 						}
 
-						return res.json({ status: "Success", displayName: results.rows[0].display_name, accessToken, isPetOwner, isCareTaker, isAdmin });
+						return res.json({ status: "Success", displayName: results.rows[0].display_name, accessToken, isPetOwner, isCareTaker, isAdmin, isPartTime });
 					}
 					else	{
 						return res.json({ status: 'Invalid login' });

@@ -274,6 +274,137 @@ app.post("/toggleAccType", isAuthenticatedMiddleware, (req, res) =>	{
 	}
 });
 
+app.get("/getPriceList", isAuthenticatedMiddleware, (req, res) =>	{
+	if(!req.user.isCareTaker) {
+        res.send({status: 'not caretaker'});
+        return;
+    }
+	db.query('SELECT pet_type, price FROM prices WHERE care_taker = $1', [req.user.username], (err, dbres) => {
+		if (err) {
+		  	console.log(err.stack);
+		} else {
+			res.send(dbres.rows);
+		}
+	});
+});
+
+app.post("/addNewPrice", isAuthenticatedMiddleware, (req, res) =>	{
+    if(!req.user.isCareTaker){
+        res.send({status: 'not caretaker'});
+        return;
+	}
+	db.query('SELECT employee_type FROM care_takers WHERE username = $1', [req.user.username], (err, dbres) => {
+		if (err) {
+		  	console.log(err.stack);
+		} else {
+			if (dbres.rows[0].employee_type === 'part-time')	{
+				db.query('SELECT price FROM base_prices WHERE pet_type = $1', [req.body.pet_type], (err, slres) => {
+					if (err || slres.rows.length == 0) {
+						  res.send({status: 'failed'});
+					} else {
+						let base_price = parseFloat(slres.rows[0].price);
+						if (base_price > parseFloat(req.body.new_price))	{
+							res.send({error: 'Minimum price: ' + base_price});
+							return;
+						}
+
+						db.query('INSERT INTO prices(care_taker, pet_type, price) VALUES ($1, $2, $3)',
+							[req.user.username, req.body.pet_type, req.body.new_price], (error, results) =>	{
+								if (!error)	{
+									res.send({status: 'success'});
+								}
+								else
+									res.send({status: 'failed'});
+							});
+					}
+				});	
+			}
+			//full-time
+			else	{
+				db.query('SELECT price FROM base_prices WHERE pet_type = $1', [req.body.pet_type], (err, slres) => {
+					if (err || slres.rows.length == 0) {
+						  res.send({status: 'failed'});
+					} else {
+						let base_price = parseFloat(slres.rows[0].price);
+						
+						db.query('SELECT avg_rating FROM care_takers WHERE username = $1', [req.user.username], (err, result) => {
+							if (err) {
+								res.send({status: 'failed'});
+							} else {
+								let avg_rating = parseFloat(result.rows[0].avg_rating);
+								if (avg_rating >= 4)
+									base_price *= 1.2;
+
+								db.query('INSERT INTO prices(care_taker, pet_type, price) VALUES ($1, $2, $3)',
+								[req.user.username, req.body.pet_type, base_price], (error, results) =>	{
+									if (!error)	{
+										res.send({status: 'success'});
+									}
+									else
+										res.send({status: 'failed'});
+								});
+							}
+						});
+					}
+				});	
+			}
+		}
+	});
+});
+
+app.post("/editPrice", isAuthenticatedMiddleware, (req, res) =>	{
+    if(!req.user.isCareTaker){
+        res.send({status: 'not caretaker'});
+        return;
+	}
+	db.query('SELECT employee_type FROM care_takers WHERE username = $1', [req.user.username], (err, dbres) => {
+		if (err) {
+		  	console.log(err.stack);
+		} else {
+			if (dbres.rows[0].employee_type === 'part-time')	{
+				db.query('SELECT price FROM base_prices WHERE pet_type = $1', [req.body.pet_type], (err, slres) => {
+					if (err || slres.rows.length == 0) {
+						  res.send({status: 'failed'});
+					} else {
+						let base_price = parseFloat(slres.rows[0].price);
+						if (base_price > parseFloat(req.body.new_price))	{
+							res.send({error: 'Minimum price: ' + base_price});
+							return;
+						}
+
+						db.query('UPDATE prices SET price = $1 WHERE care_taker = $2 AND pet_type = $3',
+							[req.body.new_price, req.user.username, req.body.pet_type], (error, results) =>	{
+								if (!error)	{
+									res.send({status: 'success'});
+								}
+								else
+									res.send({status: 'failed'});
+							});
+					}
+				});	
+			}
+			else	{
+				res.send({status: 'failed'});
+			}
+		}
+	});
+});
+
+app.post("/deletePrice", isAuthenticatedMiddleware, (req, res) =>	{
+    if(!req.user.isCareTaker){
+        res.send({status: 'not caretaker'});
+        return;
+	}
+	db.query('DELETE FROM prices WHERE pet_type = $1 AND care_taker = $2',
+	[req.body.pet_type, req.user.username], (error, results) =>	{
+		if (!error)	{
+			res.send({status: 'success'});
+		}
+		else
+			res.send({status: 'failed'});
+	});
+});
+
 server.listen(port, () =>
 	console.log(`Backend server started on port ${port}`)
 );

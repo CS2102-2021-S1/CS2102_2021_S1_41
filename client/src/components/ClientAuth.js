@@ -5,7 +5,7 @@ export function isLoggedIn()   {
         return false;
 }
 
-export function saveLoginCredentials(username, displayName, accessToken, isPetOwner, isCareTaker, isAdmin)    {
+export function saveLoginCredentials(username, displayName, accessToken, isPetOwner, isCareTaker, isAdmin, isPartTime)    {
     localStorage.setItem("loggedIn", "1");
     localStorage.setItem("username", username);
     localStorage.setItem("displayName", displayName);
@@ -13,6 +13,7 @@ export function saveLoginCredentials(username, displayName, accessToken, isPetOw
     localStorage.setItem("isPetOwner", isPetOwner);
     localStorage.setItem("isCareTaker", isCareTaker);
     localStorage.setItem("isAdmin", isAdmin);
+    localStorage.setItem("isPartTime", isPartTime);
 }
 
 export function getDisplayName()    {
@@ -33,6 +34,10 @@ export function isAdmin()    {
     return localStorage.getItem("isAdmin") === "true";
 }
 
+export function isPartTime()    {
+    return localStorage.getItem("isPartTime") === "true";
+}
+
 export function logOut()    {
     localStorage.setItem("accessToken", "");
     localStorage.setItem("loggedIn", "0");
@@ -40,4 +45,5 @@ export function logOut()    {
     localStorage.setItem("isPetOwner", false);
     localStorage.setItem("isCareTaker", false);
     localStorage.setItem("isAdmin", false);
+    localStorage.setItem("isPartTime", false);
 }
