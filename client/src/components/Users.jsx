@@ -3,6 +3,7 @@ import "css/styles.css";
 import Navbar from "./Navbar";
 import { getAccessToken, isLoggedIn, logOut, isAdmin } from "./ClientAuth";
 import Table from "react-bootstrap/Table";
+import { BACKEND_SUBDIR } from "../Constants";
 
 class Users extends Component {
 	constructor(props) {
@@ -17,7 +18,7 @@ class Users extends Component {
 				window.location.href = "/";
 				return;
 			}
-			fetch(window.location.protocol + "//" + window.location.host + "/getUsers", {
+			fetch(window.location.protocol + "//" + window.location.host + BACKEND_SUBDIR + "/getUsers", {
 				method: "GET",
 				headers: { "Content-Type": "application/json", "Access-Token": getAccessToken() },
 			})
@@ -47,7 +48,7 @@ class Users extends Component {
 				window.location.href = "/";
 				return;
 			}
-			fetch(window.location.protocol + "//" + window.location.host + "/toggleAccType", {
+			fetch(window.location.protocol + "//" + window.location.host + BACKEND_SUBDIR + "/toggleAccType", {
 				method: "POST",
 				headers: { "Content-Type": "application/json", "Access-Token": getAccessToken() },
 				body: JSON.stringify({

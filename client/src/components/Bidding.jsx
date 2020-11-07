@@ -3,6 +3,7 @@ import "css/styles.css";
 import Navbar from "./Navbar";
 import { getAccessToken, isLoggedIn, logOut } from "./ClientAuth";
 import Table from "react-bootstrap/Table";
+import { BACKEND_SUBDIR } from "../Constants";
 
 class Bidding extends Component {
 	constructor(props) {
@@ -46,7 +47,7 @@ class Bidding extends Component {
 	search = (e) => {
 		e.preventDefault();
 		if (isLoggedIn()) {
-			fetch(window.location.protocol + "//" + window.location.host + "/searchCaretaker", {
+			fetch(window.location.protocol + "//" + window.location.host + BACKEND_SUBDIR + "/searchCaretaker", {
 				method: "POST",
 				headers: { "Content-Type": "application/json", "Access-Token": getAccessToken() },
 				body: JSON.stringify({
@@ -92,7 +93,7 @@ class Bidding extends Component {
 		this.setState({ bid_error: "" });
 
 		if (isLoggedIn()) {
-			fetch(window.location.protocol + "//" + window.location.host + "/bid", {
+			fetch(window.location.protocol + "//" + window.location.host + BACKEND_SUBDIR + "/bid", {
 				method: "POST",
 				headers: { "Content-Type": "application/json", "Access-Token": getAccessToken() },
 				body: JSON.stringify({

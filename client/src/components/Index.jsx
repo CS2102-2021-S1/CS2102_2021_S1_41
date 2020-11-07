@@ -9,6 +9,7 @@ import dog from "img/dog.jpg";
 import cat from "img/cat.jpg";
 import hamster from "img/hamster.jpg";
 import { FaPlus, FaTrash, FaCheck, FaTimes } from "react-icons/fa";
+import { BACKEND_SUBDIR } from "../Constants";
 
 class Index extends Component {
 	constructor(props) {
@@ -39,7 +40,7 @@ class Index extends Component {
 	}
 	getOwnerPets = () => {
 		if (isLoggedIn()) {
-			fetch(window.location.protocol + "//" + window.location.host + "/getOwnerPets", {
+			fetch(window.location.protocol + "//" + window.location.host + BACKEND_SUBDIR + "/getOwnerPets", {
 				method: "GET",
 				headers: { "Content-Type": "application/json", "Access-Token": getAccessToken() },
 			})
@@ -58,7 +59,7 @@ class Index extends Component {
 	getOwnerBids = () => {
 		this.setState({ bids: [] });
 		if (isLoggedIn()) {
-			fetch(window.location.protocol + "//" + window.location.host + "/getOwnerBids", {
+			fetch(window.location.protocol + "//" + window.location.host + BACKEND_SUBDIR + "/getOwnerBids", {
 				method: "GET",
 				headers: { "Content-Type": "application/json", "Access-Token": getAccessToken() },
 			})
@@ -108,7 +109,7 @@ class Index extends Component {
 		} else {
 			this.setState({ new_pet_error: "" });
 		}
-		fetch(window.location.protocol + "//" + window.location.host + "/addPet", {
+		fetch(window.location.protocol + "//" + window.location.host + BACKEND_SUBDIR + "/addPet", {
 			method: "POST",
 			headers: { "Content-Type": "application/json", "Access-Token": getAccessToken() },
 			body: JSON.stringify({
@@ -139,7 +140,7 @@ class Index extends Component {
 			});
 	};
 	payBid = (bid) => {
-		fetch(window.location.protocol + "//" + window.location.host + "/payBid", {
+		fetch(window.location.protocol + "//" + window.location.host + BACKEND_SUBDIR + "/payBid", {
 			method: "POST",
 			headers: { "Content-Type": "application/json", "Access-Token": getAccessToken() },
 			body: JSON.stringify({
@@ -167,7 +168,7 @@ class Index extends Component {
 	};
 	deletePet(e, pet) {
 		e.preventDefault();
-		fetch(window.location.protocol + "//" + window.location.host + "/deletePet", {
+		fetch(window.location.protocol + "//" + window.location.host + BACKEND_SUBDIR + "/deletePet", {
 			method: "POST",
 			headers: { "Content-Type": "application/json", "Access-Token": getAccessToken() },
 			body: JSON.stringify({
@@ -220,7 +221,7 @@ class Index extends Component {
 	};
 	submitRating = (e) => {
 		e.preventDefault();
-		fetch(window.location.protocol + "//" + window.location.host + "/submitRating", {
+		fetch(window.location.protocol + "//" + window.location.host + BACKEND_SUBDIR + "/submitRating", {
 			method: "POST",
 			headers: { "Content-Type": "application/json", "Access-Token": getAccessToken() },
 			body: JSON.stringify({

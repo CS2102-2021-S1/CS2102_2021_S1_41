@@ -5,7 +5,7 @@
 		"client": "cd client && set BROWSER=none&& yarn start",
 		"server": "nodemon server.js",
 		"start": "concurrently --kill-others-on-fail \"yarn server\" \"yarn client\"",
-		"deploy": "serve -l 5000 -s build",
+		"deploy": "serve -l 8000 -s build",
 		"pc": "concurrently --kill-others-on-fail \"yarn server\" \"yarn deploy\""
 	},
 	"dependencies": {

@@ -3,6 +3,7 @@ import "css/styles.css";
 import { FaPlus, FaTrash } from "react-icons/fa";
 import { getAccessToken, isLoggedIn, logOut } from "./ClientAuth";
 import { FaCheck, FaTimes } from "react-icons/fa";
+import { BACKEND_SUBDIR } from "../Constants";
 
 class FulltimeCaretakerDashboard extends Component {
 	constructor(props) {
@@ -55,7 +56,7 @@ class FulltimeCaretakerDashboard extends Component {
 		} else {
 			this.setState({ new_price_error: "" });
 		}
-		fetch(window.location.protocol + "//" + window.location.host + "/addNewPrice", {
+		fetch(window.location.protocol + "//" + window.location.host + BACKEND_SUBDIR + "/addNewPrice", {
 			method: "POST",
 			headers: { "Content-Type": "application/json", "Access-Token": getAccessToken() },
 			body: JSON.stringify({
@@ -92,7 +93,7 @@ class FulltimeCaretakerDashboard extends Component {
 		} else {
 			this.setState({ leave_error: "" });
 		}
-		fetch(window.location.protocol + "//" + window.location.host + "/addLeave", {
+		fetch(window.location.protocol + "//" + window.location.host + BACKEND_SUBDIR + "/addLeave", {
 			method: "POST",
 			headers: { "Content-Type": "application/json", "Access-Token": getAccessToken() },
 			body: JSON.stringify({
@@ -230,7 +231,7 @@ class FulltimeCaretakerDashboard extends Component {
 	getCaretakerBids = () => {
 		this.setState({ bids: [] });
 		if (isLoggedIn()) {
-			fetch(window.location.protocol + "//" + window.location.host + "/getCaretakerBids", {
+			fetch(window.location.protocol + "//" + window.location.host + BACKEND_SUBDIR + "/getCaretakerBids", {
 				method: "GET",
 				headers: { "Content-Type": "application/json", "Access-Token": getAccessToken() },
 			})
@@ -254,7 +255,7 @@ class FulltimeCaretakerDashboard extends Component {
 	}
 	getFullTimePriceList() {
 		if (isLoggedIn()) {
-			fetch(window.location.protocol + "//" + window.location.host + "/getPriceList", {
+			fetch(window.location.protocol + "//" + window.location.host + BACKEND_SUBDIR + "/getPriceList", {
 				method: "GET",
 				headers: { "Content-Type": "application/json", "Access-Token": getAccessToken() },
 			})
@@ -272,7 +273,7 @@ class FulltimeCaretakerDashboard extends Component {
 	}
 	getLeaves() {
 		if (isLoggedIn()) {
-			fetch(window.location.protocol + "//" + window.location.host + "/getLeaves", {
+			fetch(window.location.protocol + "//" + window.location.host + BACKEND_SUBDIR + "/getLeaves", {
 				method: "GET",
 				headers: { "Content-Type": "application/json", "Access-Token": getAccessToken() },
 			})
@@ -290,7 +291,7 @@ class FulltimeCaretakerDashboard extends Component {
 	}
 	getMonthSalary() {
 		if (isLoggedIn()) {
-			fetch(window.location.protocol + "//" + window.location.host + "/getMonthSalary", {
+			fetch(window.location.protocol + "//" + window.location.host + BACKEND_SUBDIR + "/getMonthSalary", {
 				method: "GET",
 				headers: { "Content-Type": "application/json", "Access-Token": getAccessToken() },
 			})
@@ -307,7 +308,7 @@ class FulltimeCaretakerDashboard extends Component {
 	deletePrice(e, price) {
 		e.preventDefault();
 		if (!window.confirm("Delete price?")) return;
-		fetch(window.location.protocol + "//" + window.location.host + "/deletePrice", {
+		fetch(window.location.protocol + "//" + window.location.host + BACKEND_SUBDIR + "/deletePrice", {
 			method: "POST",
 			headers: { "Content-Type": "application/json", "Access-Token": getAccessToken() },
 			body: JSON.stringify({
@@ -330,7 +331,7 @@ class FulltimeCaretakerDashboard extends Component {
 	deleteLeave(e, leave) {
 		e.preventDefault();
 		if (!window.confirm("Delete leave?")) return;
-		fetch(window.location.protocol + "//" + window.location.host + "/deleteLeave", {
+		fetch(window.location.protocol + "//" + window.location.host + BACKEND_SUBDIR + "/deleteLeave", {
 			method: "POST",
 			headers: { "Content-Type": "application/json", "Access-Token": getAccessToken() },
 			body: JSON.stringify({

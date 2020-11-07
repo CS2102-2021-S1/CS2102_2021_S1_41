@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import "css/styles.css";
 import { getAccessToken, isLoggedIn, logOut } from "./ClientAuth";
 import { FaPlus, FaTrash, FaEdit } from "react-icons/fa";
+import { BACKEND_SUBDIR } from "../Constants";
 
 class AdminDashboard extends Component {
 	constructor(props) {
@@ -20,7 +21,7 @@ class AdminDashboard extends Component {
 	}
 	getBasePrices = () => {
 		if (isLoggedIn()) {
-			fetch(window.location.protocol + "//" + window.location.host + "/getBasePrices", {
+			fetch(window.location.protocol + "//" + window.location.host + BACKEND_SUBDIR + "/getBasePrices", {
 				method: "GET",
 				headers: { "Content-Type": "application/json", "Access-Token": getAccessToken() },
 			})
@@ -47,7 +48,7 @@ class AdminDashboard extends Component {
 		} else {
 			this.setState({ new_base_price_error: "" });
 		}
-		fetch(window.location.protocol + "//" + window.location.host + "/addBasePrice", {
+		fetch(window.location.protocol + "//" + window.location.host + BACKEND_SUBDIR + "/addBasePrice", {
 			method: "POST",
 			headers: { "Content-Type": "application/json", "Access-Token": getAccessToken() },
 			body: JSON.stringify({
@@ -79,7 +80,7 @@ class AdminDashboard extends Component {
 		e.preventDefault();
 		if (!window.confirm("Delete base price? This will cascade through the whole database for this pet type!"))
 			return;
-		fetch(window.location.protocol + "//" + window.location.host + "/deleteBasePrice", {
+		fetch(window.location.protocol + "//" + window.location.host + BACKEND_SUBDIR + "/deleteBasePrice", {
 			method: "POST",
 			headers: { "Content-Type": "application/json", "Access-Token": getAccessToken() },
 			body: JSON.stringify({
@@ -110,7 +111,7 @@ class AdminDashboard extends Component {
 	editBasePrice = (e) => {
 		e.preventDefault();
 		console.log(this.state);
-		fetch(window.location.protocol + "//" + window.location.host + "/editBasePrice", {
+		fetch(window.location.protocol + "//" + window.location.host + BACKEND_SUBDIR + "/editBasePrice", {
 			method: "POST",
 			headers: { "Content-Type": "application/json", "Access-Token": getAccessToken() },
 			body: JSON.stringify({
@@ -246,7 +247,7 @@ class AdminDashboard extends Component {
 								<h5 className="d-inline-block">Admin Controls</h5>
 							</div>
 							<div className="pet-box admin-controls">
-								<a href="/users">All Users</a>
+								<a href="/users">Change User Roles</a>
 							</div>
 						</div>
 					</div>

@@ -28,8 +28,9 @@ app.use(bodyParser.json());
 app.use(jwtAuthenticationMiddleware);
 const server = http.createServer(app);
 const port = argv.port || 8080;
+const subdir = "/api"
 
-app.post("/register", (req, res) =>	{
+app.post(subdir + "/register", (req, res) =>	{
 	const salt = crypto.randomBytes(12).toString('base64');
 	const hash = crypto.createHash('sha256').update(salt + req.body.password).digest('base64');
 	db.query('INSERT INTO users(username, display_name, password_hash, salt) VALUES ($1, $2, $3, $4)', 
@@ -48,9 +49,9 @@ app.post("/register", (req, res) =>	{
 	});
 });
 
-app.post("/login", jwtLogin);
+app.post(subdir + "/login", jwtLogin);
 
-app.get("/caretakers", (req, res) =>	{
+app.get(subdir + "/caretakers", (req, res) =>	{
 	const qstring = "SELECT a.care_taker, employee_type, pet_type, price, area,\n" +
 	    "TO_CHAR(start_date, 'DD-MON-YYYY') AS start_date, TO_CHAR(end_date, 'DD-MON-YYYY') AS end_date\n" +
         "FROM availabilities a\n" +
@@ -68,7 +69,7 @@ app.get("/caretakers", (req, res) =>	{
 //Gihun
 //30-10-2020
 //retrieving average price for each pet type and area
-app.get("/getAveragePrice", (req, res) => {
+app.get(subdir + "/getAveragePrice", (req, res) => {
     const qstring = "SELECT a.pet_type, area, average_price, price AS base_price, \n" +
     "CASE WHEN price <= average_price THEN 1 ELSE 0 END AS ishigh\n" + 
     "FROM base_prices b LEFT JOIN\n" +
@@ -85,7 +86,7 @@ app.get("/getAveragePrice", (req, res) => {
 });
 
 //retrieving unique areas in all care_takers available
-app.get("/getAreas", (req, res) => {
+app.get(subdir + "/getAreas", (req, res) => {
 	const qstring = "SELECT DISTINCT area FROM care_takers;";
 	db.query(qstring, (err, result) => {
 		if (err) {
@@ -97,7 +98,7 @@ app.get("/getAreas", (req, res) => {
 });
 
 //Use isAuthenticationMiddleware to check if user is logged in (Server side check)
-app.get("/getOwnerPets", isAuthenticatedMiddleware, (req, res) =>	{
+app.get(subdir + "/getOwnerPets", isAuthenticatedMiddleware, (req, res) =>	{
 	//console.log(req.user);
 	db.query('SELECT pet_name, pet_type FROM pets WHERE username = $1', [req.user.username], (err, dbres) => {
 		if (err) {
@@ -109,7 +110,7 @@ app.get("/getOwnerPets", isAuthenticatedMiddleware, (req, res) =>	{
 	});
 });
 
-app.get("/getOwnerBids", isAuthenticatedMiddleware, (req, res) =>	{
+app.get(subdir + "/getOwnerBids", isAuthenticatedMiddleware, (req, res) =>	{
 	db.query('SELECT * FROM bids WHERE pet_owner = $1', [req.user.username], (err, dbres) => {
 		if (err) {
 		  	console.log(err.stack)
@@ -119,7 +120,7 @@ app.get("/getOwnerBids", isAuthenticatedMiddleware, (req, res) =>	{
 	});
 });
 
-app.get("/getCaretakerBids", isAuthenticatedMiddleware, (req, res) =>	{
+app.get(subdir + "/getCaretakerBids", isAuthenticatedMiddleware, (req, res) =>	{
 	db.query('SELECT * FROM bids WHERE care_taker = $1', [req.user.username], (err, dbres) => {
 		if (err) {
 		  	console.log(err.stack)
@@ -129,7 +130,7 @@ app.get("/getCaretakerBids", isAuthenticatedMiddleware, (req, res) =>	{
 	});
 });
 
-app.get("/getUsers", isAuthenticatedMiddleware, (req, res) =>	{
+app.get(subdir + "/getUsers", isAuthenticatedMiddleware, (req, res) =>	{
     if(!req.user.isAdmin){
         res.send({status: 'not admin'});
         return;
@@ -146,7 +147,7 @@ app.get("/getUsers", isAuthenticatedMiddleware, (req, res) =>	{
 	});
 });
 
-app.get("/getBasePrices", isAuthenticatedMiddleware, (req, res) =>	{
+app.get(subdir + "/getBasePrices", isAuthenticatedMiddleware, (req, res) =>	{
 	//console.log(req.user);
 	if(!req.user.isAdmin) {
         res.send({status: 'not admin'});
@@ -161,7 +162,7 @@ app.get("/getBasePrices", isAuthenticatedMiddleware, (req, res) =>	{
 	});
 });
 
-app.post("/addPet", isAuthenticatedMiddleware, (req, res) =>	{
+app.post(subdir + "/addPet", isAuthenticatedMiddleware, (req, res) =>	{
 	db.query('INSERT INTO pets(username, pet_name, pet_type, special_req) VALUES ($1, $2, $3, $4)', 
 	[req.user.username, req.body.pet_name, req.body.pet_type, req.body.special_req], (error, results) =>	{
 		if (!error)	{
@@ -172,7 +173,7 @@ app.post("/addPet", isAuthenticatedMiddleware, (req, res) =>	{
 	});
 });
 
-app.post("/deletePet", isAuthenticatedMiddleware, (req, res) =>	{
+app.post(subdir + "/deletePet", isAuthenticatedMiddleware, (req, res) =>	{
 	db.query('DELETE FROM pets WHERE username = $1 and pet_name = $2', 
 	[req.user.username, req.body.pet_name], (error, results) =>	{
 		if (!error)	{
@@ -183,7 +184,7 @@ app.post("/deletePet", isAuthenticatedMiddleware, (req, res) =>	{
 	});
 });
 
-app.post("/addBasePrice", isAuthenticatedMiddleware, (req, res) =>	{
+app.post(subdir + "/addBasePrice", isAuthenticatedMiddleware, (req, res) =>	{
     if(!req.user.isAdmin){
         res.send({status: 'not admin'});
         return;
@@ -198,7 +199,7 @@ app.post("/addBasePrice", isAuthenticatedMiddleware, (req, res) =>	{
 	});
 });
 
-app.post("/editBasePrice", isAuthenticatedMiddleware, (req, res) =>	{
+app.post(subdir + "/editBasePrice", isAuthenticatedMiddleware, (req, res) =>	{
     if(!req.user.isAdmin){
         res.send({status: 'not admin'});
         return;
@@ -246,7 +247,7 @@ app.post("/editBasePrice", isAuthenticatedMiddleware, (req, res) =>	{
 	});
 });
 
-app.post("/deleteBasePrice", isAuthenticatedMiddleware, (req, res) =>	{
+app.post(subdir + "/deleteBasePrice", isAuthenticatedMiddleware, (req, res) =>	{
     if(!req.user.isAdmin){
         res.send({status: 'not admin'});
         return;
@@ -261,7 +262,7 @@ app.post("/deleteBasePrice", isAuthenticatedMiddleware, (req, res) =>	{
 	});
 });
 
-app.post("/toggleAccType", isAuthenticatedMiddleware, (req, res) =>	{
+app.post(subdir + "/toggleAccType", isAuthenticatedMiddleware, (req, res) =>	{
     if(!req.user.isAdmin){
         res.send({status: 'not admin'});
         return;
@@ -295,7 +296,7 @@ app.post("/toggleAccType", isAuthenticatedMiddleware, (req, res) =>	{
 	}
 });
 
-app.get("/getPriceList", isAuthenticatedMiddleware, (req, res) =>	{
+app.get(subdir + "/getPriceList", isAuthenticatedMiddleware, (req, res) =>	{
 	if(!req.user.isCareTaker) {
         res.send({status: 'not caretaker'});
         return;
@@ -309,7 +310,7 @@ app.get("/getPriceList", isAuthenticatedMiddleware, (req, res) =>	{
 	});
 });
 
-app.post("/addNewPrice", isAuthenticatedMiddleware, (req, res) =>	{
+app.post(subdir + "/addNewPrice", isAuthenticatedMiddleware, (req, res) =>	{
     if(!req.user.isCareTaker){
         res.send({status: 'not caretaker'});
         return;
@@ -374,7 +375,7 @@ app.post("/addNewPrice", isAuthenticatedMiddleware, (req, res) =>	{
 	});
 });
 
-app.post("/editPrice", isAuthenticatedMiddleware, (req, res) =>	{
+app.post(subdir + "/editPrice", isAuthenticatedMiddleware, (req, res) =>	{
     if(!req.user.isCareTaker){
         res.send({status: 'not caretaker'});
         return;
@@ -412,7 +413,7 @@ app.post("/editPrice", isAuthenticatedMiddleware, (req, res) =>	{
 	});
 });
 
-app.post("/deletePrice", isAuthenticatedMiddleware, (req, res) =>	{
+app.post(subdir + "/deletePrice", isAuthenticatedMiddleware, (req, res) =>	{
     if(!req.user.isCareTaker){
         res.send({status: 'not caretaker'});
         return;
@@ -427,7 +428,7 @@ app.post("/deletePrice", isAuthenticatedMiddleware, (req, res) =>	{
 	});
 });
 
-app.post("/searchCaretaker", isAuthenticatedMiddleware, (req, res) =>	{
+app.post(subdir + "/searchCaretaker", isAuthenticatedMiddleware, (req, res) =>	{
 	db.query('SELECT care_taker, price FROM prices WHERE pet_type = $1 AND price >= $2 AND price <= $3', [req.body.pet_type, req.body.min_price, req.body.max_price], (err, dbres) => {
 		if (err) {
 		  	console.log(err.stack);
@@ -437,7 +438,7 @@ app.post("/searchCaretaker", isAuthenticatedMiddleware, (req, res) =>	{
 	});
 });
 
-app.post("/bid", isAuthenticatedMiddleware, async (req, res) =>	{
+app.post(subdir + "/bid", isAuthenticatedMiddleware, async (req, res) =>	{
 	let base_price = 0;
 	try	{
 		const res = await db.query('SELECT price FROM base_prices WHERE pet_type = $1', [req.body.pet_type]);
@@ -536,7 +537,7 @@ app.post("/bid", isAuthenticatedMiddleware, async (req, res) =>	{
 	}
 });
 
-app.post("/payBid", isAuthenticatedMiddleware, async (req, res) =>	{
+app.post(subdir + "/payBid", isAuthenticatedMiddleware, async (req, res) =>	{
 	try	{
 		const result = await db.query('SELECT selected FROM bids WHERE pet_owner = $1 AND care_taker = $2 AND pet_name = $3 AND start_date = $4 AND end_date = $5', 
 		[req.user.username, req.body.care_taker, req.body.pet_name, req.body.start_date, req.body.end_date]);
@@ -567,7 +568,7 @@ app.post("/payBid", isAuthenticatedMiddleware, async (req, res) =>	{
 	});
 });
 
-app.post("/confirmBid", isAuthenticatedMiddleware, (req, res) =>	{
+app.post(subdir + "/confirmBid", isAuthenticatedMiddleware, (req, res) =>	{
 	db.query('UPDATE bids SET selected = true WHERE pet_owner = $1 AND care_taker = $2 AND pet_name = $3 AND start_date = $4 AND end_date = $5', 
 	[req.body.pet_owner, req.user.username, req.body.pet_name, req.body.start_date, req.body.end_date], (err, dbres) => {
 		if (err) {
@@ -579,7 +580,7 @@ app.post("/confirmBid", isAuthenticatedMiddleware, (req, res) =>	{
 	});
 });
 
-app.post("/submitRating", isAuthenticatedMiddleware, (req, res) =>	{
+app.post(subdir + "/submitRating", isAuthenticatedMiddleware, (req, res) =>	{
 	db.query('UPDATE bids SET rating = $1, review = $2 WHERE pet_owner = $3 AND care_taker = $4 AND pet_name = $5 AND start_date = $6 AND end_date = $7', 
 	[req.body.rating, req.body.review, req.user.username, req.body.care_taker, req.body.pet_name, req.body.start_date, req.body.end_date], (err, dbres) => {
 		if (err) {
@@ -611,7 +612,7 @@ app.post("/submitRating", isAuthenticatedMiddleware, (req, res) =>	{
 	});
 });
 
-app.get("/getMonthSalary", isAuthenticatedMiddleware, async (req, res) =>	{
+app.get(subdir + "/getMonthSalary", isAuthenticatedMiddleware, async (req, res) =>	{
 	const today = new Date(new Date().toISOString().slice(0, 10));
 
 	let full_time = false;
@@ -686,7 +687,7 @@ app.get("/getMonthSalary", isAuthenticatedMiddleware, async (req, res) =>	{
 	}
 });
 
-app.get("/getLeaves", isAuthenticatedMiddleware, (req, res) =>	{
+app.get(subdir + "/getLeaves", isAuthenticatedMiddleware, (req, res) =>	{
 	if(!req.user.isCareTaker) {
         res.send({status: 'not caretaker'});
         return;
@@ -700,7 +701,7 @@ app.get("/getLeaves", isAuthenticatedMiddleware, (req, res) =>	{
 	});
 });
 
-app.post("/addLeave", isAuthenticatedMiddleware, async (req, res) =>	{
+app.post(subdir + "/addLeave", isAuthenticatedMiddleware, async (req, res) =>	{
     if(!req.user.isCareTaker){
         res.send({status: 'not caretaker'});
         return;
@@ -775,7 +776,7 @@ app.post("/addLeave", isAuthenticatedMiddleware, async (req, res) =>	{
 	});
 });
 
-app.post("/deleteLeave", isAuthenticatedMiddleware, (req, res) =>	{
+app.post(subdir + "/deleteLeave", isAuthenticatedMiddleware, (req, res) =>	{
     if(!req.user.isCareTaker){
         res.send({status: 'not caretaker'});
         return;
@@ -790,7 +791,7 @@ app.post("/deleteLeave", isAuthenticatedMiddleware, (req, res) =>	{
 	});
 });
 
-app.get("/getAvailabilities", isAuthenticatedMiddleware, (req, res) =>	{
+app.get(subdir + "/getAvailabilities", isAuthenticatedMiddleware, (req, res) =>	{
 	if(!req.user.isCareTaker) {
         res.send({status: 'not caretaker'});
         return;
@@ -804,7 +805,7 @@ app.get("/getAvailabilities", isAuthenticatedMiddleware, (req, res) =>	{
 	});
 });
 
-app.post("/addAvailability", isAuthenticatedMiddleware, (req, res) =>	{
+app.post(subdir + "/addAvailability", isAuthenticatedMiddleware, (req, res) =>	{
     if(!req.user.isCareTaker){
         res.send({status: 'not caretaker'});
         return;
@@ -834,7 +835,7 @@ app.post("/addAvailability", isAuthenticatedMiddleware, (req, res) =>	{
 	});
 });
 
-app.post("/deleteAvailability", isAuthenticatedMiddleware, (req, res) =>	{
+app.post(subdir + "/deleteAvailability", isAuthenticatedMiddleware, (req, res) =>	{
     if(!req.user.isCareTaker){
         res.send({status: 'not caretaker'});
         return;

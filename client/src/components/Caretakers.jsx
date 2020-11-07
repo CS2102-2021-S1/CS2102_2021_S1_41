@@ -3,11 +3,11 @@ import "css/styles.css";
 import Navbar from "./Navbar";
 import Table from "react-bootstrap/Table";
 import "react-dropdown/style.css";
-
 import icon_ex1 from "img/expensive_1.png";
 import icon_ex2 from "img/expensive_2.png";
 import available from "img/available.png";
 import unavailable from "img/unavailable.png";
+import { BACKEND_SUBDIR } from "../Constants";
 
 class Caretakers extends Component {
 	constructor(props) {
@@ -19,7 +19,7 @@ class Caretakers extends Component {
 		};
 	}
 	componentDidMount() {
-		fetch("/getAreas")
+		fetch(BACKEND_SUBDIR + "/getAreas")
 			.then((response) => {
 				if (!response.ok) {
 					throw Error("GET request failed");
@@ -42,7 +42,7 @@ class Caretakers extends Component {
 					console.log("parsing failed", ex);
 				}
 			);
-		fetch("/caretakers")
+		fetch(BACKEND_SUBDIR + "/caretakers")
 			.then((response) => {
 				if (!response.ok) {
 					throw Error("GET request failed.");
@@ -64,7 +64,7 @@ class Caretakers extends Component {
 					console.log("parsing failed", ex);
 				}
 			);
-		fetch("/getAveragePrice")
+		fetch(BACKEND_SUBDIR + "/getAveragePrice")
 			.then((response) => {
 				if (!response.ok) {
 					throw Error("GET request failed.");

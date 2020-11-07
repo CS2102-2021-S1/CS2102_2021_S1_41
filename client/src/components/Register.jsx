@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import "css/styles.css";
 import icon from "img/icon.png";
 import { saveLoginCredentials } from "./ClientAuth";
+import { BACKEND_SUBDIR } from "../Constants";
 
 class Register extends Component {
 	constructor(props) {
@@ -48,7 +49,7 @@ class Register extends Component {
 		} else {
 			this.setState({ error: "" });
 		}
-		fetch(window.location.protocol + "//" + window.location.host + "/register", {
+		fetch(window.location.protocol + "//" + window.location.host + BACKEND_SUBDIR + "/register", {
 			method: "POST",
 			headers: { "Content-Type": "application/json" },
 			body: JSON.stringify({
@@ -60,7 +61,7 @@ class Register extends Component {
 			.then((response) => response.json())
 			.then((data) => {
 				if (data.status === "registered") {
-					fetch(window.location.protocol + "//" + window.location.host + "/login", {
+					fetch(window.location.protocol + "//" + window.location.host + BACKEND_SUBDIR + "/login", {
 						method: "POST",
 						headers: { "Content-Type": "application/json" },
 						body: JSON.stringify({

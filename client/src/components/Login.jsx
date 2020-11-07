@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import "css/styles.css";
 import icon from "img/icon.png";
 import { saveLoginCredentials } from "./ClientAuth";
+import { BACKEND_SUBDIR } from "../Constants";
 
 class Login extends Component {
 	constructor(props) {
@@ -32,7 +33,7 @@ class Login extends Component {
 			return;
 		}
 		this.setState({ error: "" });
-		fetch(window.location.protocol + "//" + window.location.host + "/login", {
+		fetch(window.location.protocol + "//" + window.location.host + BACKEND_SUBDIR + "/login", {
 			method: "POST",
 			headers: { "Content-Type": "application/json" },
 			body: JSON.stringify({

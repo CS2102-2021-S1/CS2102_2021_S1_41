@@ -3,6 +3,7 @@ import "css/styles.css";
 import { FaPlus, FaEdit, FaTrash } from "react-icons/fa";
 import { getAccessToken, isLoggedIn, logOut } from "./ClientAuth";
 import { FaCheck, FaTimes } from "react-icons/fa";
+import { BACKEND_SUBDIR } from "../Constants";
 
 class ParttimeCaretakerDashboard extends Component {
 	constructor(props) {
@@ -37,7 +38,7 @@ class ParttimeCaretakerDashboard extends Component {
 		} else {
 			this.setState({ new_price_error: "" });
 		}
-		fetch(window.location.protocol + "//" + window.location.host + "/addNewPrice", {
+		fetch(window.location.protocol + "//" + window.location.host + BACKEND_SUBDIR + "/addNewPrice", {
 			method: "POST",
 			headers: { "Content-Type": "application/json", "Access-Token": getAccessToken() },
 			body: JSON.stringify({
@@ -76,7 +77,7 @@ class ParttimeCaretakerDashboard extends Component {
 		} else {
 			this.setState({ leave_error: "" });
 		}
-		fetch(window.location.protocol + "//" + window.location.host + "/addAvailability", {
+		fetch(window.location.protocol + "//" + window.location.host + BACKEND_SUBDIR + "/addAvailability", {
 			method: "POST",
 			headers: { "Content-Type": "application/json", "Access-Token": getAccessToken() },
 			body: JSON.stringify({
@@ -131,7 +132,7 @@ class ParttimeCaretakerDashboard extends Component {
 	}
 	getMonthSalary() {
 		if (isLoggedIn()) {
-			fetch(window.location.protocol + "//" + window.location.host + "/getMonthSalary", {
+			fetch(window.location.protocol + "//" + window.location.host + BACKEND_SUBDIR + "/getMonthSalary", {
 				method: "GET",
 				headers: { "Content-Type": "application/json", "Access-Token": getAccessToken() },
 			})
@@ -265,7 +266,7 @@ class ParttimeCaretakerDashboard extends Component {
 	}
 	getPartTimePriceList() {
 		if (isLoggedIn()) {
-			fetch(window.location.protocol + "//" + window.location.host + "/getPriceList", {
+			fetch(window.location.protocol + "//" + window.location.host + BACKEND_SUBDIR + "/getPriceList", {
 				method: "GET",
 				headers: { "Content-Type": "application/json", "Access-Token": getAccessToken() },
 			})
@@ -284,7 +285,7 @@ class ParttimeCaretakerDashboard extends Component {
 	getCaretakerBids = () => {
 		this.setState({ bids: [] });
 		if (isLoggedIn()) {
-			fetch(window.location.protocol + "//" + window.location.host + "/getCaretakerBids", {
+			fetch(window.location.protocol + "//" + window.location.host + BACKEND_SUBDIR + "/getCaretakerBids", {
 				method: "GET",
 				headers: { "Content-Type": "application/json", "Access-Token": getAccessToken() },
 			})
@@ -303,7 +304,7 @@ class ParttimeCaretakerDashboard extends Component {
 	getAvailabilities() {
 		this.setState({ availabilities: [] });
 		if (isLoggedIn()) {
-			fetch(window.location.protocol + "//" + window.location.host + "/getAvailabilities", {
+			fetch(window.location.protocol + "//" + window.location.host + BACKEND_SUBDIR + "/getAvailabilities", {
 				method: "GET",
 				headers: { "Content-Type": "application/json", "Access-Token": getAccessToken() },
 			})
@@ -329,7 +330,7 @@ class ParttimeCaretakerDashboard extends Component {
 	}
 	editPrice = (e) => {
 		e.preventDefault();
-		fetch(window.location.protocol + "//" + window.location.host + "/editPrice", {
+		fetch(window.location.protocol + "//" + window.location.host + BACKEND_SUBDIR + "/editPrice", {
 			method: "POST",
 			headers: { "Content-Type": "application/json", "Access-Token": getAccessToken() },
 			body: JSON.stringify({
@@ -356,7 +357,7 @@ class ParttimeCaretakerDashboard extends Component {
 	deletePrice(e, price) {
 		e.preventDefault();
 		if (!window.confirm("Delete price?")) return;
-		fetch(window.location.protocol + "//" + window.location.host + "/deletePrice", {
+		fetch(window.location.protocol + "//" + window.location.host + BACKEND_SUBDIR + "/deletePrice", {
 			method: "POST",
 			headers: { "Content-Type": "application/json", "Access-Token": getAccessToken() },
 			body: JSON.stringify({
@@ -379,7 +380,7 @@ class ParttimeCaretakerDashboard extends Component {
 	deleteAvailability(e, availability) {
 		e.preventDefault();
 		if (!window.confirm("Delete availability?")) return;
-		fetch(window.location.protocol + "//" + window.location.host + "/deleteAvailability", {
+		fetch(window.location.protocol + "//" + window.location.host + BACKEND_SUBDIR + "/deleteAvailability", {
 			method: "POST",
 			headers: { "Content-Type": "application/json", "Access-Token": getAccessToken() },
 			body: JSON.stringify({
@@ -401,7 +402,7 @@ class ParttimeCaretakerDashboard extends Component {
 			});
 	}
 	confirmBid = (bid) => {
-		fetch(window.location.protocol + "//" + window.location.host + "/confirmBid", {
+		fetch(window.location.protocol + "//" + window.location.host + BACKEND_SUBDIR + "/confirmBid", {
 			method: "POST",
 			headers: { "Content-Type": "application/json", "Access-Token": getAccessToken() },
 			body: JSON.stringify({
