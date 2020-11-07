@@ -760,6 +760,11 @@ app.post("/addLeave", isAuthenticatedMiddleware, async (req, res) =>	{
 		}
 	}
 
+	if (new Date(req.body.end_date).getFullYear() > new Date().getFullYear() + 1)	{
+		res.send({error:"You cannot apply leaves for more than 2 years away"});
+		return;
+	}
+
 	db.query('INSERT INTO leaves (care_taker, start_date, end_date) VALUES ($1, $2, $3)',
 	[req.user.username, new Date(req.body.start_date), new Date(req.body.end_date)], (error, results) =>	{
 		if (!error)	{
@@ -813,6 +818,12 @@ app.post("/addAvailability", isAuthenticatedMiddleware, (req, res) =>	{
 		res.send({error: 'Cannot add date before today'});
         return;
 	}
+
+	if (new Date(req.body.end_date).getFullYear() > new Date().getFullYear() + 1)	{
+		res.send({error:"You cannot add availabilities for more than 2 years away"});
+		return;
+	}
+
 	db.query('INSERT INTO availabilities (care_taker, start_date, end_date) VALUES ($1, $2, $3)',
 	[req.user.username, new Date(req.body.start_date), new Date(req.body.end_date)], (error, results) =>	{
 		if (!error)	{
