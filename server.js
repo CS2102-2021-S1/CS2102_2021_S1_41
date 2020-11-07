@@ -851,6 +851,8 @@ app.post(subdir + "/deleteAvailability", isAuthenticatedMiddleware, (req, res) =
 });
 
 app.post(subdir + "/getUserRating", (req, res) =>	{
+	if (!req.body.user)
+		return;
 	db.query('SELECT avg_rating FROM care_takers WHERE username = $1', [req.body.username], (err, dbres) => {
 		if (err) {
 		  	console.log(err.stack);
@@ -861,6 +863,8 @@ app.post(subdir + "/getUserRating", (req, res) =>	{
 });
 
 app.post(subdir + "/getUserReviews", (req, res) =>	{
+	if (!req.body.user)
+		return;
 	db.query('SELECT pet_owner, rating, review FROM bids WHERE care_taker = $1 AND rating IS NOT NULL', [req.body.username], (err, dbres) => {
 		if (err) {
 		  	console.log(err.stack);
