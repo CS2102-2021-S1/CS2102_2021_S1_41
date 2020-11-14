@@ -15,3 +15,5 @@ Deployed on private server
 ### ER Diagram Model: Pet Caring Service (PCS) Application
 ![ER Diagram](docs/images/ER_Diagram_Project.jpg)
 
+### [Demo Video](docs/videos/demo_video.mp4)
+
