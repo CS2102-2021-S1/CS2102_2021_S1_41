@@ -9,6 +9,7 @@ AY20/21 Sem1 CS2102 Database Systems Group Project (Team 41)
 ## Deployment
 ### [Website Link](https://petcare.places.sg)
 Deployed on private server
+### Please wait awhile to refresh the page if data does not load, to allow db connection to reestablish
 
 ### [Project Report](docs/Report.pdf)
 
